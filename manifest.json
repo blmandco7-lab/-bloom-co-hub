@@ -1,0 +1,17 @@
+{
+  "name": "Bloom & Co Network",
+  "short_name": "Bloom & Co",
+  "description": "Bloom & Co Creator Hub",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D1B3E",
+  "theme_color": "#0D1B3E",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230D1B3E' rx='32'/><text y='.85em' font-size='140' text-anchor='middle' x='96'>\ud83c\udf38</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
