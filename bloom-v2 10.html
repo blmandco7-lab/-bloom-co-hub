@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Bloom & Co"/>
+<meta name="theme-color" content="#0A1220"/>
+<title>Bloom & Co — Creator Hub</title>
+<meta http-equiv="X-Content-Type-Options" content="nosniff"/>
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN"/>
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
+<script type="module">
+// ── FIREBASE ──────────────────────────────────────────────────────
+// API key is public by design — Firestore Security Rules protect data.
+// NO passwords are stored in this file. All auth uses SHA-256 hashes.
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs,
+         updateDoc, deleteDoc, onSnapshot, query, where, orderBy, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyBG69_bgQbkH5PWY2icJmeK5l-IH3pPhSQ",
+  authDomain: "bloom-co-network.firebaseapp.com",
+  projectId: "bloom-co-network",
+  storageBucket: "bloom-co-network.firebasestorage.app",
+  messagingSenderId: "894635541155",
+  appId: "1:894635541155:web:8306607225223cb8a4f516"
+});
+
+window.__bdb = getFirestore(app);
+window.__bfs = { collection, doc, addDoc, setDoc, getDoc, getDocs,
+                 updateDoc, deleteDoc, onSnapshot, query, where, orderBy, serverTimestamp };
+window.dispatchEvent(new Event('fbReady'));
+</script>
+
+<style>
+/* ── TOKENS ─────────────────────────────────── */
+:root {
+  --bg:    #0A1220;
+  --bg2:   #0F1A2E;
+  --bg3:   #152035;
+  --gold:  #C8A85A;
+  --gold2: #E2C97E;
+  --gold3: rgba(200,168,90,0.15);
+  --white: #F0EDE6;
+  --muted: #7A7060;
+  --muted2:#5A5248;
+  --border:rgba(200,168,90,0.18);
+  --border2:rgba(200,168,90,0.4);
+  --green: #3DBF8A;
+  --blue:  #4A9ECC;
+  --red:   #CC4A4A;
+  --orange:#CC8A3D;
+  --r:14px; --rs:8px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+  --header-h:58px;
+  --nav-h:60px;
+  --serif:'Cormorant Garamond',serif;
+  --sans:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--bg);}
+body{font-family:var(--sans);color:var(--white);position:fixed;width:100%;height:100%;overflow:hidden;}
+
+/* ── BACKGROUND ─────────────────────────────── */
+.bg-layer{position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 20% -10%,rgba(200,168,90,0.07) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 50% at 90% 100%,rgba(200,168,90,0.04) 0%,transparent 60%),
+             linear-gradient(160deg,#0A1220 0%,#0F1A2E 50%,#0A1220 100%);}
+
+/* ── HEADER ─────────────────────────────────── */
+.header{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  height:calc(var(--header-h) + var(--safe-t));
+  padding-top:var(--safe-t);
+  display:flex;align-items:center;justify-content:space-between;
+  padding-left:16px;padding-right:16px;
+  background:rgba(10,18,32,0.92);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.header-brand{display:flex;align-items:center;gap:10px;}
+.header-logo{width:36px;height:36px;border-radius:50%;object-fit:cover;
+  border:1.5px solid var(--gold);box-shadow:0 0 14px rgba(200,168,90,0.25);}
+.header-logo-fallback{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--gold);
+  background:var(--bg3);display:flex;align-items:center;justify-content:center;
+  font-size:18px;box-shadow:0 0 14px rgba(200,168,90,0.25);}
+.header-name{font-family:var(--serif);font-size:17px;color:var(--gold);letter-spacing:0.02em;line-height:1;}
+.header-sub{font-size:9px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-top:1px;}
+.live-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;
+  background:rgba(200,168,90,0.1);border:1px solid var(--border2);
+  border-radius:999px;font-size:10px;font-weight:600;color:var(--gold);}
+.pulse{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+
+/* ── SCROLL ──────────────────────────────────── */
+.scroll{position:fixed;top:0;left:0;right:0;bottom:0;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;z-index:1;
+  padding-bottom:calc(var(--nav-h) + var(--safe-b) + 8px);}
+.screen{display:none;min-height:100%;}
+.screen.active{display:block;}
+.wrap{max-width:480px;margin:0 auto;padding:calc(var(--header-h) + var(--safe-t) + 12px) 14px 20px;}
+
+/* ── NAV ─────────────────────────────────────── */
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:40;
+  height:calc(var(--nav-h) + var(--safe-b));padding-bottom:var(--safe-b);
+  background:rgba(10,18,32,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);display:flex;align-items:stretch;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;border:none;background:transparent;
+  color:rgba(240,237,230,0.3);font-family:var(--sans);font-size:8.5px;font-weight:500;
+  letter-spacing:0.04em;text-transform:uppercase;transition:color .2s;padding:0 2px;}
+.nav-btn.active{color:var(--gold);}
+.nav-icon{font-size:20px;line-height:1;}
+
+/* ── CARDS ───────────────────────────────────── */
+.card{background:rgba(15,26,46,0.85);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px;margin-bottom:12px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.card-sm{background:rgba(15,26,46,0.7);border:1px solid var(--border);
+  border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;}
+.card-gold{background:linear-gradient(135deg,rgba(200,168,90,0.08),rgba(15,26,46,0.9));
+  border:1px solid var(--border2);}
+
+/* ── SECTION HEADER ──────────────────────────── */
+.sec{display:flex;align-items:center;justify-content:space-between;margin:16px 0 10px;}
+.sec-label{font-family:var(--serif);font-size:13px;font-weight:600;color:var(--gold);
+  letter-spacing:0.06em;text-transform:uppercase;}
+.sec-count{font-size:10px;color:var(--muted);background:rgba(200,168,90,0.08);
+  border:1px solid var(--border);border-radius:999px;padding:2px 8px;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:16px 0;}
+
+/* ── HERO ────────────────────────────────────── */
+.hero{position:relative;margin:0 -14px;margin-top:calc(-1 * (var(--header-h) + var(--safe-t) + 12px));
+  padding:calc(var(--header-h) + var(--safe-t) + 28px) 24px 28px;
+  text-align:center;overflow:hidden;
+  background:linear-gradient(180deg,rgba(10,18,32,0) 0%,rgba(10,18,32,0.6) 50%,rgba(10,18,32,1) 100%);}
+.hero::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 50% 10%,rgba(200,168,90,0.12) 0%,transparent 70%);
+  pointer-events:none;}
+.hero-logo-wrap{position:relative;display:inline-block;margin-bottom:14px;}
+.hero-logo{width:86px;height:86px;border-radius:50%;object-fit:cover;
+  border:2px solid var(--gold);
+  box-shadow:0 0 0 6px rgba(200,168,90,0.08),0 0 40px rgba(200,168,90,0.2);}
+.hero-logo-fallback{width:86px;height:86px;border-radius:50%;
+  border:2px solid var(--gold);background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;font-size:42px;
+  box-shadow:0 0 0 6px rgba(200,168,90,0.08),0 0 40px rgba(200,168,90,0.2);}
+.hero-ring{position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid rgba(200,168,90,0.25);animation:ring 3.5s ease-in-out infinite;}
+.hero-ring2{position:absolute;inset:-16px;border-radius:50%;
+  border:1px solid rgba(200,168,90,0.1);animation:ring 3.5s ease-in-out infinite .6s;}
+@keyframes ring{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.02)}}
+.hero-title{font-family:var(--serif);font-size:26px;color:var(--gold);margin-bottom:6px;font-weight:600;}
+.hero-tag{font-size:12px;color:rgba(240,237,230,0.6);font-style:italic;line-height:1.7;}
+
+/* ── QUICK LINKS ──────────────────────────────── */
+.ql-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.ql{display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:14px 6px;background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:var(--r);text-decoration:none;cursor:pointer;transition:all .2s;}
+.ql:hover,.ql:active{border-color:var(--gold);background:var(--gold3);}
+.ql-icon{font-size:22px;}
+.ql-label{font-size:9px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;}
+
+/* ── INPUTS ──────────────────────────────────── */
+input[type=text],input[type=password],input[type=number],input[type=url],input[type=email],textarea,select{
+  width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  border-radius:var(--rs);padding:11px 13px;font-size:13px;color:var(--white);
+  font-family:var(--sans);outline:none;transition:border-color .2s;
+  margin-bottom:10px;-webkit-appearance:none;}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);background:rgba(200,168,90,0.05);}
+textarea{resize:none;height:70px;}
+select option{background:#152035;}
+label.field-label{display:block;font-size:10px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;margin-top:2px;}
+
+/* ── BUTTONS ─────────────────────────────────── */
+.btn{width:100%;padding:12px;border-radius:var(--rs);font-size:12px;font-weight:700;
+  cursor:pointer;border:none;transition:all .2s;font-family:var(--sans);
+  letter-spacing:.06em;text-transform:uppercase;}
+.btn-gold{background:linear-gradient(135deg,#C8A85A,#E2C97E,#C8A85A);
+  color:#0A1220;box-shadow:0 4px 18px rgba(200,168,90,0.25);}
+.btn-gold:active{transform:scale(.98);}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--gold);border:1px solid var(--border2);}
+.btn-sm{padding:5px 12px;border-radius:var(--rs);font-size:10px;font-weight:700;
+  cursor:pointer;border:1px solid transparent;font-family:var(--sans);
+  transition:all .2s;text-transform:uppercase;letter-spacing:.04em;}
+.btn-approve{background:rgba(61,191,138,0.1);color:var(--green);border-color:rgba(61,191,138,0.3);}
+.btn-reject{background:rgba(200,168,90,0.07);color:var(--muted);border-color:var(--border);}
+.btn-danger{background:rgba(204,74,74,0.1);color:var(--red);border-color:rgba(204,74,74,0.3);}
+
+/* ── BADGES ──────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;
+  border-radius:999px;font-size:8.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.badge-live{background:rgba(204,74,74,0.12);color:#FF7A7A;border:1px solid rgba(204,74,74,0.3);}
+.badge-live::before{content:'';width:5px;height:5px;border-radius:50%;background:#FF7A7A;animation:pulse 1.5s infinite;}
+.badge-offline{background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid rgba(255,255,255,0.06);}
+.tbadge-1{color:var(--gold);border:1px solid var(--border2);background:rgba(200,168,90,0.1);}
+.tbadge-2{color:var(--blue);border:1px solid rgba(74,158,204,0.35);background:rgba(74,158,204,0.08);}
+.tbadge-3{color:var(--orange);border:1px solid rgba(204,138,61,0.35);background:rgba(204,138,61,0.08);}
+.tbadge-4{color:var(--green);border:1px solid rgba(61,191,138,0.3);background:rgba(61,191,138,0.07);}
+
+/* ── AUTH ────────────────────────────────────── */
+.auth-wrap{max-width:300px;margin:0 auto;text-align:center;padding:24px 14px;}
+.auth-logo{width:72px;height:72px;border-radius:50%;object-fit:cover;
+  border:2px solid var(--gold);margin-bottom:14px;box-shadow:0 0 28px rgba(200,168,90,0.2);}
+.auth-logo-fallback{width:72px;height:72px;border-radius:50%;border:2px solid var(--gold);
+  background:var(--bg3);display:flex;align-items:center;justify-content:center;
+  font-size:34px;margin:0 auto 14px;box-shadow:0 0 28px rgba(200,168,90,0.2);}
+.auth-title{font-family:var(--serif);font-size:22px;color:var(--gold);margin-bottom:5px;}
+.auth-sub{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.6;}
+.auth-err{font-size:11px;color:var(--red);min-height:16px;margin-top:4px;}
+
+/* ── CREATOR CARD ────────────────────────────── */
+.creator-card{display:flex;align-items:center;gap:11px;padding:11px 13px;
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:var(--rs);margin-bottom:8px;cursor:pointer;transition:all .2s;}
+.creator-card:active,.creator-card.sel{border-color:var(--gold);background:var(--gold3);}
+.c-avatar{width:42px;height:42px;border-radius:50%;background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;border:1.5px solid var(--border2);flex-shrink:0;}
+
+/* ── TOGGLE ──────────────────────────────────── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;background:var(--card-gold,rgba(200,168,90,0.05));
+  border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;}
+.switch{position:relative;width:48px;height:26px;cursor:pointer;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;inset:0;background:rgba(255,255,255,0.08);
+  border-radius:999px;transition:all .3s;border:1px solid var(--border);}
+.slider::before{content:'';position:absolute;width:20px;height:20px;
+  left:2px;top:2px;background:var(--muted);border-radius:50%;
+  transition:all .3s;box-shadow:0 2px 6px rgba(0,0,0,0.4);}
+.switch input:checked+.slider{background:rgba(200,168,90,0.18);border-color:var(--gold);}
+.switch input:checked+.slider::before{transform:translateX(22px);background:var(--gold);}
+
+/* ── STATS ───────────────────────────────────── */
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px;}
+.stat-box{background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px;text-align:center;}
+.stat-num{font-family:var(--serif);font-size:24px;color:var(--gold);font-weight:600;line-height:1;}
+.stat-lbl{font-size:9px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;}
+.pbar{background:rgba(255,255,255,0.06);border-radius:999px;height:5px;overflow:hidden;margin-bottom:12px;}
+.pbar-fill{background:linear-gradient(90deg,var(--gold),var(--gold2));height:100%;border-radius:999px;transition:width .6s;}
+
+/* ── VIDEO ───────────────────────────────────── */
+.vid-wrap{background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:var(--r);margin-bottom:12px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.vid-wrap:active{border-color:var(--gold);transform:translateY(-1px);}
+.vid-thumb{width:100%;aspect-ratio:16/9;background:var(--bg3);position:relative;overflow:hidden;}
+.vid-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.vid-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.2);}
+.vid-play-btn{width:46px;height:46px;border-radius:50%;background:rgba(200,168,90,0.9);
+  color:#0A1220;font-size:16px;display:flex;align-items:center;justify-content:center;
+  padding-left:3px;box-shadow:0 2px 16px rgba(0,0,0,0.5);transition:transform .2s;}
+.vid-wrap:active .vid-play-btn{transform:scale(1.1);}
+.vid-info{padding:10px 13px 12px;}
+.vid-num{font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;}
+.vid-title{font-size:13px;font-weight:600;color:var(--white);}
+.vid-desc{font-size:11px;color:var(--muted);margin-top:3px;}
+.locked-box{background:rgba(255,255,255,0.02);border:1px solid var(--border);
+  border-radius:var(--r);padding:20px;text-align:center;margin-bottom:12px;}
+.locked-icon{font-size:28px;margin-bottom:8px;}
+.locked-title{font-family:var(--serif);font-size:15px;color:var(--gold);margin-bottom:5px;}
+.locked-sub{font-size:11px;color:var(--muted);line-height:1.65;}
+
+/* ── ANNOUNCEMENTS ───────────────────────────── */
+.ann-card{background:linear-gradient(135deg,rgba(200,168,90,0.07),rgba(15,26,46,0.9));
+  border:1px solid var(--border2);border-left:3px solid var(--gold);
+  border-radius:var(--r);padding:14px 16px;margin-bottom:10px;}
+.ann-label{font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;
+  letter-spacing:.1em;margin-bottom:7px;}
+.ann-text{font-size:13px;color:var(--white);line-height:1.65;}
+.ann-date{font-size:10px;color:var(--muted);margin-top:6px;}
+
+/* ── DM MESSAGES ─────────────────────────────── */
+.dm-card{padding:13px 15px;border-radius:var(--rs);margin-bottom:8px;}
+.dm-from-agency{background:rgba(200,168,90,0.08);border:1px solid var(--border2);border-left:3px solid var(--gold);}
+.dm-meta{font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
+.dm-text{font-size:13px;color:var(--white);line-height:1.6;}
+.dm-date{font-size:10px;color:var(--muted);margin-top:5px;}
+
+/* ── Q CARDS ─────────────────────────────────── */
+.q-card{background:rgba(255,255,255,0.02);border:1px solid var(--border);
+  border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;}
+.q-text{font-size:13px;color:var(--white);line-height:1.5;margin-bottom:7px;}
+.q-meta{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.upvote{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;
+  border-radius:999px;border:1px solid var(--border);background:transparent;
+  color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;
+  font-family:var(--sans);transition:all .2s;}
+.upvote:hover,.upvote.voted{border-color:var(--gold);color:var(--gold);background:var(--gold3);}
+
+/* ── DEALS ───────────────────────────────────── */
+.deal-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:var(--r);padding:15px;margin-bottom:10px;}
+.deal-brand{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--white);margin-bottom:4px;}
+.deal-desc{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:9px;}
+.deal-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.deal-tag{font-size:9px;padding:3px 8px;border-radius:999px;
+  border:1px solid var(--border2);color:var(--gold);background:var(--gold3);}
+.deal-pay{font-size:11px;font-weight:700;color:var(--green);margin-bottom:9px;}
+.deal-applied{font-size:10px;color:var(--green);font-weight:700;padding:5px 11px;
+  border-radius:var(--rs);background:rgba(61,191,138,0.08);
+  border:1px solid rgba(61,191,138,0.2);display:inline-block;}
+
+/* ── RUNSHEET ────────────────────────────────── */
+.runsheet-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.runsheet-item:last-child{border-bottom:none;}
+.rs-time{font-size:11px;font-weight:700;color:var(--gold);min-width:56px;}
+.rs-task{font-size:12px;color:var(--white);line-height:1.5;}
+
+/* ── MISSION ─────────────────────────────────── */
+.mission-card{background:linear-gradient(135deg,rgba(61,191,138,0.06),rgba(15,26,46,0.9));
+  border:1px solid rgba(61,191,138,0.25);border-radius:var(--r);padding:16px;margin-bottom:12px;}
+.mission-label{font-size:9px;font-weight:700;color:var(--green);text-transform:uppercase;
+  letter-spacing:.1em;margin-bottom:8px;}
+.mission-title{font-family:var(--serif);font-size:16px;color:var(--white);margin-bottom:5px;}
+.mission-desc{font-size:12px;color:var(--muted);line-height:1.6;}
+.mission-reward{font-size:11px;font-weight:700;color:var(--gold);margin-top:8px;}
+
+/* ── HYPE WALL ───────────────────────────────── */
+.hype-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;position:relative;}
+.hype-msg{font-size:13px;color:var(--white);line-height:1.5;font-style:italic;}
+.hype-from{font-size:10px;color:var(--gold);margin-top:5px;font-weight:600;}
+.hype-heart{position:absolute;top:10px;right:12px;font-size:14px;}
+
+/* ── ACADEMY PROGRESS ────────────────────────── */
+.prog-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.prog-item:last-child{border-bottom:none;}
+.prog-check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.prog-check.done{background:rgba(61,191,138,0.15);border-color:rgba(61,191,138,0.4);color:var(--green);}
+.prog-title{font-size:12px;color:var(--white);flex:1;}
+
+/* ── SCHEDULE BOARD ──────────────────────────── */
+.sched-card{display:flex;align-items:center;gap:12px;padding:11px 13px;
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:var(--rs);margin-bottom:8px;}
+.sched-day{font-family:var(--serif);font-size:13px;font-weight:600;color:var(--gold);min-width:72px;}
+.sched-name{font-size:13px;font-weight:600;color:var(--white);}
+.sched-time{font-size:11px;color:var(--muted);}
+
+/* ── INVITE BOX ──────────────────────────────── */
+.invite-box{background:var(--gold3);border:1px solid var(--border2);border-radius:var(--rs);
+  padding:12px 14px;font-size:15px;color:var(--gold);letter-spacing:.12em;
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-weight:700;}
+.copy-btn{font-size:9px;color:var(--muted);cursor:pointer;padding:4px 9px;
+  border-radius:var(--rs);border:1px solid var(--border);background:transparent;
+  font-family:var(--sans);transition:all .2s;text-transform:uppercase;letter-spacing:.04em;}
+.copy-btn:hover{color:var(--gold);}
+
+/* ── TIER BTNS ───────────────────────────────── */
+.tier-btns{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+.tbtn{padding:4px 10px;border-radius:999px;font-size:9px;font-weight:700;cursor:pointer;
+  border:1px solid var(--border);background:transparent;color:var(--muted);
+  font-family:var(--sans);transition:all .2s;text-transform:uppercase;}
+.tbtn.t1{color:var(--gold);border-color:var(--border2);background:rgba(200,168,90,0.1);}
+.tbtn.t2{color:var(--blue);border-color:rgba(74,158,204,0.35);background:rgba(74,158,204,0.08);}
+.tbtn.t3{color:var(--orange);border-color:rgba(204,138,61,0.35);background:rgba(204,138,61,0.08);}
+.tbtn.t4{color:var(--green);border-color:rgba(61,191,138,0.3);background:rgba(61,191,138,0.07);}
+
+/* ── TOAST ───────────────────────────────────── */
+.toast{position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 10px);left:50%;
+  transform:translateX(-50%) translateY(70px);
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#0A1220;padding:10px 20px;border-radius:999px;font-size:12px;font-weight:700;
+  z-index:100;transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;pointer-events:none;box-shadow:0 4px 20px rgba(200,168,90,0.3);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.err{background:linear-gradient(135deg,#CC4A4A,#aa3333);color:#fff;}
+
+/* ── VIDEO MODAL ─────────────────────────────── */
+.vmodal{position:fixed;inset:0;z-index:200;background:#000;display:none;flex-direction:column;}
+.vmodal.open{display:flex;}
+.vmodal-hd{position:absolute;top:0;left:0;right:0;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;padding-top:calc(12px + var(--safe-t));background:rgba(0,0,0,0.7);}
+.vmodal-title{font-size:12px;font-weight:600;color:#fff;flex:1;padding-right:10px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vmodal-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);
+  border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.vembed{width:100%;flex:1;position:relative;background:#000;display:flex;align-items:center;justify-content:center;}
+.vembed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
+
+
+/* ── FOLDER ROWS ─────────────────────────────── */
+.folder-wrap{margin-bottom:18px;}
+.folder-hd{display:flex;align-items:center;gap:8px;padding:10px 13px;
+  background:rgba(200,168,90,0.07);border:1px solid var(--border2);
+  border-radius:var(--rs);cursor:pointer;transition:all .2s;user-select:none;-webkit-user-select:none;}
+.folder-hd.open{border-bottom-left-radius:0;border-bottom-right-radius:0;border-bottom-color:transparent;}
+.folder-hd:active{background:rgba(200,168,90,0.12);}
+.folder-icon{font-size:14px;}
+.folder-name{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;flex:1;}
+.folder-count{font-size:9px;color:var(--muted);background:rgba(255,255,255,0.05);padding:2px 7px;border-radius:999px;}
+.folder-chev{font-size:11px;color:var(--muted);transition:transform .25s;}
+.folder-hd.open .folder-chev{transform:rotate(90deg);}
+.folder-body{display:none;border:1px solid var(--border2);border-top:none;
+  border-bottom-left-radius:var(--rs);border-bottom-right-radius:var(--rs);
+  padding:12px 10px 10px;background:rgba(10,18,32,0.6);}
+.folder-body.open{display:block;}
+/* horizontal scroll row */
+.vid-row{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  padding-bottom:6px;scroll-snap-type:x mandatory;scrollbar-width:none;}
+.vid-row::-webkit-scrollbar{display:none;}
+/* compact card for rows */
+.vid-card-sm{flex:0 0 158px;width:158px;background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;
+  cursor:pointer;transition:all .2s;scroll-snap-align:start;position:relative;}
+.vid-card-sm:active{border-color:var(--gold);}
+.vid-thumb-sm{width:100%;height:89px;background:var(--bg3);position:relative;overflow:hidden;}
+.vid-thumb-sm img{width:100%;height:100%;object-fit:cover;display:block;}
+.vid-play-sm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.2);}
+.vid-play-sm-btn{width:32px;height:32px;border-radius:50%;background:rgba(200,168,90,0.9);
+  color:#0A1220;font-size:13px;display:flex;align-items:center;justify-content:center;
+  padding-left:3px;box-shadow:0 2px 10px rgba(0,0,0,0.5);}
+.vid-info-sm{padding:7px 9px 9px;}
+.vid-num-sm{font-size:8px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+.vid-title-sm{font-size:11px;font-weight:600;color:var(--white);line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.vid-watched-badge{position:absolute;top:4px;left:4px;background:rgba(61,191,138,0.85);
+  border-radius:999px;padding:1px 6px;font-size:8px;font-weight:700;color:#fff;}
+
+/* ── EMPTY ───────────────────────────────────── */
+.empty{text-align:center;padding:28px 14px;color:var(--muted);font-size:12px;}
+.empty-icon{font-size:28px;margin-bottom:8px;opacity:.6;}
+
+/* ── TIP CARD ────────────────────────────────── */
+.tip-card{background:linear-gradient(135deg,rgba(74,158,204,0.05),rgba(15,26,46,0.9));
+  border:1px solid rgba(74,158,204,0.18);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;}
+.tip-label{font-size:9px;font-weight:700;color:var(--gold2);text-transform:uppercase;
+  letter-spacing:.1em;margin-bottom:7px;}
+.tip-text{font-size:12px;color:var(--white);line-height:1.7;font-style:italic;}
+</style>
+</head>
+<body>
+<div class="bg-layer"></div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-brand">
+    <img id="hlogo" class="header-logo" src="" alt="Bloom & Co" style="display:none;"/>
+    <div id="hlogo-fb" class="header-logo-fallback" style="display:flex;"></div>
+    <div>
+      <div class="header-name">Bloom & Co</div>
+      <div class="header-sub">Creator Hub</div>
+    </div>
+  </div>
+  <div class="live-pill" id="live-count"><span class="pulse"></span><span>0 Live</span></div>
+</header>
+
+<!-- SCREENS -->
+<div class="scroll">
+  <div class="screen active" id="s-home"></div>
+  <div class="screen" id="s-fan"></div>
+  <div class="screen" id="s-creator"></div>
+  <div class="screen" id="s-mod"></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" id="nb-home" onclick="go('home')"><span class="nav-icon">🏠</span><span>Home</span></button>
+  <button class="nav-btn" id="nb-fan" onclick="go('fan')"><span class="nav-icon">👥</span><span>Fan</span></button>
+  <button class="nav-btn" id="nb-creator" onclick="go('creator')"><span class="nav-icon">🎬</span><span>Hub</span></button>
+  <button class="nav-btn" id="nb-mod" onclick="go('mod')"><span class="nav-icon">🔐</span><span>Agency</span></button>
+</nav>
+
+<!-- VIDEO MODAL -->
+<div class="vmodal" id="vmodal">
+  <div class="vmodal-hd">
+    <div class="vmodal-title" id="vmodal-title"></div>
+    <button class="vmodal-close" onclick="closeVid()">✕</button>
+  </div>
+  <div class="vembed"><iframe id="vframe" allowfullscreen allow="autoplay;encrypted-media;fullscreen;picture-in-picture" sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin"></iframe></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  BLOOM & CO — CREATOR HUB v2
+//  Passwords: SHA-256 hashed only. No plaintext anywhere.
+//  Mod hash:    ca230ec597cac60445b9332f769dfaccb3d57f30641ceacec05cf927aaf1a223
+//  Brands hash: e96a101de2235fd1bd91ebdf1fc5e25f509b8494973d4f61d7085670ba0af9a7
+// ══════════════════════════════════════════════════════════════
+
+// ── SECURITY ─────────────────────────────────────────────────
+async function sha256(s){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+// Persist lockout across refreshes using sessionStorage
+let _modTries=parseInt(sessionStorage.getItem('_mt')||'0');
+let _dealTries=parseInt(sessionStorage.getItem('_dt')||'0');
+let _qTries=0;
+// Auto-increment and persist
+const _incMod=()=>{_modTries++;sessionStorage.setItem('_mt',_modTries);};
+const _incDeal=()=>{_dealTries++;sessionStorage.setItem('_dt',_dealTries);};
+const MOD_HASH  ='ca230ec597cac60445b9332f769dfaccb3d57f30641ceacec05cf927aaf1a223';
+const DEAL_HASH ='e96a101de2235fd1bd91ebdf1fc5e25f509b8494973d4f61d7085670ba0af9a7';
+
+// ── FIREBASE HELPERS ──────────────────────────────────────────
+function whenReady(fn){window.addEventListener('fbReady',fn,{once:true});}
+const DB  = ()=>window.__bdb;
+const FS  = ()=>window.__bfs;
+const col = p=>FS().collection(DB(),p);
+const ref = (p,id)=>FS().doc(DB(),p,id);
+
+// ── CONSTANTS ─────────────────────────────────────────────────
+const TIERS={
+  1:{key:'1',label:'⭐ Creator Academy',color:'var(--gold)',cls:'tbadge-1'},
+  2:{key:'2',label:'📱 Multi-Platform Hub',color:'var(--blue)',cls:'tbadge-2'},
+  3:{key:'3',label:'💼 Business Builder',color:'var(--orange)',cls:'tbadge-3'},
+  4:{key:'4',label:'🤝 Sub-Agency Partner',color:'var(--green)',cls:'tbadge-4'}
+};
+const TIER_ORDER=[1,2,3,4];
+const tierRank=t=>parseInt(t)||0;
+const tierInfo=t=>TIERS[parseInt(t)]||{label:'No Tier',cls:'',color:'var(--muted)'};
+const niche=n=>n==='pets'?'🐾 Pets':n==='beauty'?'✨ Beauty':'🌿 Lifestyle';
+const san=s=>String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').substring(0,500);
+const fmtDate=ts=>ts?new Date(ts.seconds*1000).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'Recently';
+const fmtTime=ts=>ts?new Date(ts.seconds*1000).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):'';
+
+const LINKS={tiktok:'https://www.tiktok.com/@bloomco23',discord:'https://discord.gg/TGbtH7Tjg',
+             website:'https://bloomconetwork.com',apply:'APPLY_LINK_HERE'};
+
+const TIPS=['Start every live with your pet, product, or activity on camera before you say a word.',
+  'Say your live schedule out loud twice per live — make it stick.',
+  'Acknowledge every gift by name within 10 seconds. Never let one go unrecognised.',
+  'Use the promise loop — tease something coming up every 10 minutes.',
+  'Post a teaser video within 2 hours before going live to drive more viewers.',
+  'Read chat usernames out loud and respond personally — it builds loyalty fast.',
+  'Check your TikTok Campaigns tab before every live — there is money in those missions.',
+  'Your gifting prompt needs a specific reward — not just "send love".',
+  'End every live with one specific reason to come back next time.',
+  'The first 60 seconds decide if TikTok pushes your live or buries it. Make them count.',
+  'Consistency beats perfection. One live every week beats three then none.',
+  'Your regulars drive your gifting. Learn their names.',
+  'A strong close is as important as a strong open. Always end with purpose.'];
+
+// ── STATE ──────────────────────────────────────────────────────
+let creators={},questions={},deals={},announcements={},hubVideos={},
+    schedules={},dms={},missions={},runsheets={},hypeWall={};
+let creator=null; // logged-in creator
+let modIn=false,dealIn=false;
+let selCreatorId=null;
+let watchedVideos=JSON.parse(localStorage.getItem('bc_watched')||'[]');
+let appliedDeals=JSON.parse(localStorage.getItem('bc_applied')||'[]');
+let _upvLog={};
+
+// ── LOGO ──────────────────────────────────────────────────────
+const LOGO_SRC='';
+function applyLogo(){
+  const img=document.getElementById('hlogo');
+  const fb=document.getElementById('hlogo-fb');
+  const src=localStorage.getItem('bc_logo')||LOGO_SRC;
+  if(src){
+    img.src=src;img.style.display='';
+    if(fb)fb.style.display='none';
+  }
+}
+function logoEl(cls){
+  const src=localStorage.getItem('bc_logo')||LOGO_SRC;
+  return `<img src="${src}" class="${cls}" alt="Bloom & Co"/>`;
+}
+function uploadLogo(){
+  // iPad-compatible file input — must be in DOM for iOS Safari/Firefox
+  let inp=document.getElementById('__logo_inp');
+  if(!inp){
+    inp=document.createElement('input');
+    inp.type='file';inp.accept='image/*';inp.id='__logo_inp';
+    inp.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0;width:1px;height:1px;';
+    document.body.appendChild(inp);
+  }
+  inp.value='';
+  inp.onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    if(f.size>2*1024*1024){toast('Image too large — under 2MB please',true);return;}
+    const r=new FileReader();
+    r.onload=ev=>{localStorage.setItem('bc_logo',ev.target.result);applyLogo();toast('Logo updated ✓');go('mod');};
+    r.readAsDataURL(f);
+  };
+  inp.click();
+}
+function removeLogo(){localStorage.removeItem('bc_logo');applyLogo();toast('Logo removed');go('mod');}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function toast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(err?' err':'');
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── NAV ───────────────────────────────────────────────────────
+function go(tab){
+  ['home','fan','creator','mod'].forEach(t=>{
+    document.getElementById('s-'+t).classList.toggle('active',t===tab);
+    document.getElementById('nb-'+t).classList.toggle('active',t===tab);
+  });
+  document.querySelector('.scroll').scrollTop=0;
+  ({home:renderHome,fan:renderFan,creator:renderCreator,mod:renderMod})[tab]?.();
+}
+
+// ── VIDEO HELPERS ─────────────────────────────────────────────
+function ytId(url){
+  if(!url)return null;
+  try{
+    if(url.includes('youtu.be/')){const p=url.split('youtu.be/')[1];return p?p.split('?')[0].substring(0,11):null;}
+    if(url.includes('youtube.com/watch')){return new URL(url).searchParams.get('v');}
+    if(url.includes('youtube.com/embed/')){const p=url.split('embed/')[1];return p?p.split('?')[0].substring(0,11):null;}
+  }catch(e){}return null;
+}
+function playVid(id,title){
+  // EMBED ONLY - never opens YouTube externally
+  if(!id){toast('Video unavailable — check the YouTube link',true);return;}
+  document.getElementById('vmodal-title').textContent=title;
+  // Use nocookie domain + playsinline to prevent iOS YouTube app prompt
+  document.getElementById('vframe').src=`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1&modestbranding=1&controls=1&fs=0&iv_load_policy=3`;
+  document.getElementById('vmodal').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.querySelector('.scroll').style.overflow='hidden';
+}
+function closeVid(){
+  document.getElementById('vmodal').classList.remove('open');
+  document.getElementById('vframe').src='';
+  document.body.style.overflow='';
+  document.querySelector('.scroll').style.overflow='';
+}
+function markWatched(id){
+  if(!watchedVideos.includes(id)){watchedVideos.push(id);localStorage.setItem('bc_watched',JSON.stringify(watchedVideos));}
+}
+// Compact card for horizontal rows
+function vidCardSm(v,showDel=false){
+  const vid=ytId(v.url);
+  const thumb=vid?`<img src="https://img.youtube.com/vi/${vid}/mqdefault.jpg" alt="" loading="lazy"/>`
+                  :`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;">🎬</div>`;
+  const watched=watchedVideos.includes(v.id);
+  const titleSafe=san(v.title).replace(/'/g,'&#39;').replace(/`/g,'&#96;');
+  return `<div class="vid-card-sm" onclick="markWatched('${v.id}');playVid('${vid||''}','${titleSafe}')">
+    ${showDel?`<button onclick="event.stopPropagation();deleteVid('${v.id}','${titleSafe}')" style="position:absolute;top:4px;right:4px;z-index:5;width:20px;height:20px;border-radius:50%;background:rgba(204,74,74,0.85);border:none;color:#fff;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>`:''}
+    <div class="vid-thumb-sm">${thumb}
+      <div class="vid-play-sm"><div class="vid-play-sm-btn">▶</div></div>
+      ${watched?'<div class="vid-watched-badge">✓</div>':''}
+    </div>
+    <div class="vid-info-sm">
+      ${v.order?`<div class="vid-num-sm">Lesson ${v.order}</div>`:''}
+      <div class="vid-title-sm">${san(v.title)}</div>
+    </div>
+  </div>`;
+}
+// Full card for mod panel
+function vidCard(v,showDel=false){
+  const vid=ytId(v.url);
+  const thumb=vid?`<img src="https://img.youtube.com/vi/${vid}/hqdefault.jpg" alt="" loading="lazy"/>`
+                  :`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;background:var(--bg3);">🎬</div>`;
+  const watched=watchedVideos.includes(v.id);
+  const titleSafe=san(v.title).replace(/'/g,'&#39;').replace(/`/g,'&#96;');
+  return `<div class="vid-wrap" onclick="markWatched('${v.id}');playVid('${vid||''}','${titleSafe}')">
+    ${showDel?`<button onclick="event.stopPropagation();deleteVid('${v.id}','${titleSafe}')" style="position:absolute;top:6px;right:6px;z-index:5;width:24px;height:24px;border-radius:50%;background:rgba(204,74,74,0.85);border:none;color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>`:''}
+    <div class="vid-thumb">${thumb}<div class="vid-play"><div class="vid-play-btn">▶</div></div>${watched?'<div style="position:absolute;top:6px;left:6px;background:rgba(61,191,138,0.85);border-radius:999px;padding:2px 8px;font-size:9px;font-weight:700;color:#fff;">✓</div>':''}</div>
+    <div class="vid-info">
+      ${v.order?`<div class="vid-num">Lesson ${v.order}</div>`:''}
+      <div class="vid-title">${san(v.title)}</div>
+      ${v.description?`<div class="vid-desc">${san(v.description)}</div>`:''}
+    </div>
+  </div>`;
+}
+// Folder emoji helper
+function folderEmoji(name){
+  const n=(name||'').toLowerCase();
+  if(n.includes('live')||n.includes('stream'))return'🔴';
+  if(n.includes('gift')||n.includes('diamond'))return'💎';
+  if(n.includes('grow')||n.includes('audit'))return'📈';
+  if(n.includes('brand')||n.includes('deal'))return'💼';
+  if(n.includes('start')||n.includes('begin')||n.includes('intro'))return'🚀';
+  if(n.includes('tiktok')||n.includes('platform'))return'📱';
+  if(n.includes('content'))return'🎬';
+  if(n.includes('money')||n.includes('income'))return'💰';
+  return'📂';
+}
+let _folderState={};
+function toggleFolder(key){
+  _folderState[key]=!_folderState[key];
+  const hd=document.getElementById('fhd-'+key);
+  const body=document.getElementById('fbody-'+key);
+  if(hd)hd.classList.toggle('open',_folderState[key]);
+  if(body)body.classList.toggle('open',_folderState[key]);
+}
+// Render vids grouped by category as folder+row
+function renderFolders(vids,showDel=false){
+  if(!vids.length)return'<div class="empty"><div class="empty-icon">📂</div>Content coming soon</div>';
+  // group by category
+  const groups={};
+  vids.forEach(v=>{const cat=v.category||v.folder||'General';if(!groups[cat])groups[cat]=[];groups[cat].push(v);});
+  return Object.entries(groups).map(([cat,cvids])=>{
+    const key=cat.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+    if(_folderState[key]===undefined)_folderState[key]=true; // default open
+    const isOpen=_folderState[key];
+    return `<div class="folder-wrap">
+      <div class="folder-hd ${isOpen?'open':''}" id="fhd-${key}" onclick="toggleFolder('${key}')">
+        <span class="folder-icon">${folderEmoji(cat)}</span>
+        <span class="folder-name">${san(cat)}</span>
+        <span class="folder-count">${cvids.length}</span>
+        <span class="folder-chev">›</span>
+      </div>
+      <div class="folder-body ${isOpen?'open':''}" id="fbody-${key}">
+        <div class="vid-row">${cvids.map(v=>vidCardSm(v,showDel)).join('')}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function copyText(t){navigator.clipboard.writeText(t).then(()=>toast('Copied!'));}
+
+// ══ HOME ══════════════════════════════════════════════════════
+function renderHome(){
+  const s=document.getElementById('s-home');
+  const tip=TIPS[Math.floor(Date.now()/86400000)%TIPS.length];
+  const liveNow=Object.values(creators).filter(c=>c.live&&!c.deleted);
+  const anns=Object.values(announcements).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,4);
+  s.innerHTML=`<div class="wrap">
+    <div class="hero">
+      <div class="hero-logo-wrap">${logoEl('hero-logo')}<div class="hero-ring"></div><div class="hero-ring2"></div></div>
+      <div class="hero-title">Bloom & Co</div>
+      <div style="font-family:var(--serif);font-size:13px;color:var(--gold);letter-spacing:.06em;margin-bottom:8px;">CREATOR HUB</div>
+      <div class="hero-tag">Not every creator is meant to stay small...<br/>some are meant to bloom.</div>
+${!creator?`
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;width:100%;max-width:260px;margin-left:auto;margin-right:auto;">
+        <div style="padding:10px 16px;background:rgba(200,168,90,0.08);border:1px solid var(--border2);border-radius:999px;font-size:11px;color:var(--muted);text-align:center;">🔐 Agency creators — tap <strong style="color:var(--gold);">Hub</strong> to log in</div>
+      </div>`:''}
+    </div>
+    <div class="ql-row">
+      <a href="${LINKS.tiktok}" target="_blank" class="ql"><span class="ql-icon">📱</span><span class="ql-label">TikTok</span></a>
+      <a href="${LINKS.discord}" target="_blank" class="ql"><span class="ql-icon">💬</span><span class="ql-label">Discord</span></a>
+      <a href="${LINKS.website}" target="_blank" class="ql"><span class="ql-icon">🌐</span><span class="ql-label">Website</span></a>
+    </div>
+    <div class="tip-card"><div class="tip-label">✨ Tip of the Day</div><div class="tip-text">"${tip}"</div></div>
+    ${liveNow.length?`<div class="sec"><span class="sec-label">Live Right Now</span><span class="sec-count">${liveNow.length}</span></div>
+      ${liveNow.map(c=>`<div class="creator-card" onclick="go('fan');setTimeout(()=>selFan('${c.id}'),80)">
+        <div class="c-avatar">${c.emoji||'🎬'}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:600;">${san(c.name)}</div><div style="font-size:10px;color:var(--muted);margin-top:2px;">${niche(c.niche)}</div></div>
+        <span class="badge badge-live">Live</span></div>`).join('')}`:''}
+    <div class="sec"><span class="sec-label">From the Agency</span></div>
+    ${anns.length?anns.map(a=>`<div class="ann-card"><div class="ann-label">📢 Announcement</div><div class="ann-text">${san(a.text)}</div><div class="ann-date">${fmtDate(a.createdAt)}</div></div>`).join('')
+    :`<div class="ann-card"><div class="ann-label">📢 Welcome to the Creator Hub</div><div class="ann-text">This is your private Bloom & Co agency dashboard. Your training videos, live tools, brand deals, weekly missions, run sheets, and stats are all right here. Use your invite code to log in and access everything built for you.</div></div>`}
+  </div>`;
+}
+
+// ══ FAN VIEW ══════════════════════════════════════════════════
+function renderFan(){
+  const s=document.getElementById('s-fan');
+  const sorted=[...Object.values(creators).filter(c=>!c.deleted)].sort((a,b)=>(b.live?1:0)-(a.live?1:0));
+  const allSchedules=Object.values(schedules).sort((a,b)=>(a.dayOrder||7)-(b.dayOrder||7));
+  const myQs=selCreatorId?Object.values(questions).filter(q=>q.creatorId===selCreatorId&&q.status!=='rejected')
+                                                   .sort((a,b)=>(b.votes||0)-(a.votes||0)):[];
+  s.innerHTML=`<div class="wrap">
+    <div class="sec" style="margin-top:0"><span class="sec-label">Quick Links</span></div>
+    <div class="ql-row">
+      <a href="${LINKS.tiktok}" target="_blank" class="ql"><span class="ql-icon">📱</span><span class="ql-label">TikTok</span></a>
+      <a href="${LINKS.website}" target="_blank" class="ql"><span class="ql-icon">🌐</span><span class="ql-label">Website</span></a>
+      <a href="${LINKS.apply}" target="_blank" class="ql"><span class="ql-icon">✍️</span><span class="ql-label">Apply</span></a>
+    </div>
+    <div class="sec"><span class="sec-label">Who's Live</span></div>
+    ${sorted.length?sorted.map(c=>`<div class="creator-card ${selCreatorId===c.id?'sel':''}" onclick="selFan('${c.id}')">
+      <div class="c-avatar">${c.emoji||'🎬'}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:600;">${san(c.name)}</div><div style="font-size:10px;color:var(--muted);margin-top:2px;">${niche(c.niche)}</div></div>
+      ${c.live?'<span class="badge badge-live">Live</span>':'<span class="badge badge-offline">Offline</span>'}
+    </div>`).join(''):'<div class="empty"><div class="empty-icon">🎬</div>No creators yet</div>'}
+    ${selCreatorId?`
+    <div class="divider"></div>
+    <div class="card card-gold">
+      <div style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">💬 Ask a Question</div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">Submit a question for an upcoming live — questions are reviewed before going live</p>
+      <label class="field-label">Your username</label>
+      <input type="text" id="fan-name" placeholder="@yourusername" maxlength="40" autocapitalize="none" autocorrect="off"/>
+      <label class="field-label">Your question</label>
+      <textarea id="fan-q" placeholder="Type your question here..." maxlength="300"></textarea>
+      <!-- honeypot - hidden from humans, bots fill this in -->
+      <input type="text" id="hp-field" name="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;" aria-hidden="true"/>
+      <button class="btn btn-gold" onclick="submitQ()">Send Question ✨</button>
+    </div>
+    <div class="sec"><span class="sec-label">Approved Questions</span><span class="sec-count">${myQs.filter(q=>q.status==='approved').length}</span></div>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">Questions approved by the creator — these get answered on the live</p>
+    ${myQs.filter(q=>q.status==='approved').map(q=>`<div class="q-card">
+      <div class="q-text">${san(q.text)}</div>
+      <div class="q-meta"><span>${san(q.name||'@anonymous')}</span>
+      <button class="upvote ${q.myVote?'voted':''}" onclick="upvote('${q.id}')">▲ ${q.votes||0}</button></div>
+    </div>`).join('')||'<div class="empty">No approved questions yet</div>'}
+    <div class="sec" style="margin-top:14px;"><span class="sec-label">All Questions</span><span class="sec-count">${myQs.length}</span></div>
+    ${myQs.map(q=>`<div class="q-card" style="${q.status==='approved'?'border-color:rgba(61,191,138,0.3);':''}">
+      <div class="q-text">${san(q.text)}</div>
+      <div class="q-meta">
+        <span>${san(q.name||'@anonymous')}</span>
+        <span style="color:${q.status==='approved'?'var(--green)':q.status==='rejected'?'var(--red)':'var(--muted)'};">${q.status==='approved'?'✓ Approved':q.status==='rejected'?'✕ Not selected':'⏳ Pending'}</span>
+        <button class="upvote ${q.myVote?'voted':''}" onclick="upvote('${q.id}')">▲ ${q.votes||0}</button>
+      </div>
+    </div>`).join('')||'<div class="empty">No questions yet — be first!</div>'}` :''}
+    <div class="divider"></div>
+    <div class="sec"><span class="sec-label">Schedule Board</span></div>
+    ${allSchedules.map(sc=>`<div class="sched-card">
+      <div><div class="sched-day">${san(sc.day)}</div><div style="font-size:10px;color:var(--muted);">${san(sc.time)}</div></div>
+      <div><div class="sched-name">${san(sc.creatorName)}</div><div style="font-size:10px;color:var(--muted);">${niche(sc.niche)}${sc.topic?' · '+san(sc.topic):''}</div></div>
+      ${sc.live?'<span class="badge badge-live" style="margin-left:auto">Live</span>':''}
+    </div>`).join('')||'<div class="empty"><div class="empty-icon">📅</div>No schedules posted yet</div>'}
+  </div>`;
+}
+function selFan(id){selCreatorId=id;renderFan();}
+
+let _lastQ=0,_qCount=0;
+async function submitQ(){
+  const now=Date.now();
+  if(now-_lastQ<10000){toast('Please wait before sending another',true);return;}
+  if(_qCount>=5){toast('Question limit reached for this session',true);return;}
+  const name=document.getElementById('fan-name')?.value.trim()||'@anonymous';
+  const text=document.getElementById('fan-q')?.value.trim();
+  if(!text){toast('Write a question first',true);return;}
+  if(text.length<3){toast('Question too short',true);return;}
+  if(!selCreatorId){toast('Select a creator first',true);return;}
+  // Honeypot check - bots fill hidden fields, humans don't
+  const hp=document.getElementById('hp-field');
+  if(hp&&hp.value.length>0){console.log('Bot detected');return;}
+  // Block script injection attempts
+  const blocked=['<script','javascript:','onerror=','eval(','document.cookie','window.location','<iframe','onload=','onclick='];
+  if(blocked.some(b=>text.toLowerCase().includes(b)||name.toLowerCase().includes(b))){toast('Invalid input',true);return;}
+  // Block suspicious patterns
+  if(/(.){10,}/.test(text)){toast('Invalid input',true);return;} // repeated chars
+  if(text.split(' ').length<2){toast('Please write a full question',true);return;} // too short
+  _lastQ=now;_qCount++;
+  try{
+    await FS().addDoc(col('questions'),{creatorId:selCreatorId,name:san(name),text:san(text),status:'pending',votes:0,createdAt:FS().serverTimestamp()});
+    document.getElementById('fan-q').value='';
+    toast('Question sent! ✓');renderFan();
+  }catch(e){toast('Connection error',true);}
+}
+async function upvote(id){
+  const now=Date.now();if(_upvLog[id]&&now-_upvLog[id]<2000)return;_upvLog[id]=now;
+  const q=questions[id];if(!q)return;
+  const nv=!q.myVote;q.myVote=nv;
+  const activeTab=document.querySelector('.screen.active')?.id;
+  if(activeTab==='s-fan')renderFan();
+  try{await FS().updateDoc(ref('questions',id),{votes:(q.votes||0)+(nv?1:-1)});}
+  catch(e){q.myVote=!nv;}
+}
+
+// ══ CREATOR VIEW ══════════════════════════════════════════════
+function renderCreator(){
+  const s=document.getElementById('s-creator');
+  if(!creator){showCreatorLogin();return;}
+  const c=creator;
+  const ti=tierInfo(c.tier);
+  const myTier=tierRank(c.tier||'0');
+  const approved=Object.values(questions).filter(q=>q.creatorId===c.id&&q.status==='approved');
+  const myDMs=Object.values(dms).filter(d=>d.creatorId===c.id||d.creatorId==='all')
+              .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+  const myMission=Object.values(missions).find(m=>!m.deleted&&(!m.tier||tierRank(m.tier)<=myTier));
+  const myRunsheet=runsheets[c.id]||null;
+  const mySched=schedules[c.id]||null;
+  const myHype=Object.values(hypeWall).filter(h=>h.status==='approved'&&(h.creatorId===c.id||!h.creatorId))
+               .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+  const anns=Object.values(announcements).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,3);
+  const allVids=Object.values(hubVideos).filter(v=>!v.deleted)
+                .sort((a,b)=>(a.order||999)-(b.order||999));
+  const myVids=allVids.filter(v=>tierRank(v.tier||'1')<=myTier&&(!v.niche||v.niche===c.niche||v.niche==='all'));
+  const dPct=c.goalDiamonds?Math.min(100,Math.round(((c.diamonds||0)/c.goalDiamonds)*100)):0;
+  const hPct=c.goalHours?Math.min(100,Math.round(((c.hours||0)/(c.goalHours||1))*100)):0;
+  const watchedMine=myVids.filter(v=>watchedVideos.includes(v.id)).length;
+  const progPct=myVids.length?Math.round((watchedMine/myVids.length)*100):0;
+
+  s.innerHTML=`<div class="wrap">
+    <!-- IDENTITY -->
+    <div class="card card-gold" style="display:flex;align-items:center;gap:12px;margin-top:0;">
+      <div class="c-avatar" style="width:52px;height:52px;font-size:26px;">${c.emoji||'🎬'}</div>
+      <div style="flex:1;">
+        <div style="font-family:var(--serif);font-size:18px;color:var(--gold);">${san(c.name)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">${niche(c.niche)}</div>
+      </div>
+      <span class="badge ${ti.cls}">${ti.label}</span>
+    </div>
+
+    <!-- LIVE TOGGLE + STREAM KEY -->
+    <div class="toggle-row">
+      <div>
+        <div style="font-size:14px;font-weight:600;">Go Live</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="live-status">${c.live?'🔴 You are LIVE':'⚫ You are offline'}</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="live-tog" ${c.live?'checked':''} onchange="toggleLive()"/><span class="slider"></span></label>
+    </div>
+    ${c.streamKey?`<div class="card-sm" style="margin-bottom:12px;">
+      <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">🔑 Stream Key / Live Link</div>
+      <div style="font-size:12px;color:var(--gold);word-break:break-all;margin-bottom:8px;">${san(c.streamKey)}</div>
+      <button class="copy-btn" onclick="copyText('${c.streamKey.replace(/'/g,"\\'")}')">Copy</button>
+    </div>`:''}
+
+    <!-- STATS -->
+    <!-- LIVE Q QUEUE -->
+    <div class="sec"><span class="sec-label">Live Q&A Queue</span><span class="sec-count">${approved.length}</span></div>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">Approved questions — answer these on your live. Fans can submit anytime.</p>
+    ${approved.length?approved.map((q,i)=>`<div class="card-sm" style="display:flex;gap:12px;align-items:flex-start;margin-bottom:8px;">
+      <div style="font-family:var(--serif);font-size:20px;font-weight:700;color:var(--gold);min-width:28px;">${String(i+1).padStart(2,'0')}</div>
+      <div><div style="font-size:13px;color:var(--white);line-height:1.5;margin-bottom:4px;">${san(q.text)}</div>
+      <div style="font-size:10px;color:var(--muted);">from ${san(q.name||'@anonymous')} · ▲${q.votes||0}</div></div>
+    </div>`).join(''):`<div class="empty" style="padding:14px 0;"><div class="empty-icon">⏳</div>No approved questions yet — approve from the Agency panel</div>`}
+    <div class="sec" style="margin-top:4px;"><span class="sec-label">Pending Review</span><span class="sec-count">${Object.values(questions).filter(q=>q.creatorId===c.id&&q.status==='pending').length}</span></div>
+    ${Object.values(questions).filter(q=>q.creatorId===c.id&&q.status==='pending').slice(0,5).map(q=>`<div class="q-card" style="opacity:.7;">
+      <div class="q-text">${san(q.text)}</div>
+      <div class="q-meta"><span>${san(q.name||'@anonymous')}</span><span style="color:var(--muted);">⏳ Awaiting agency approval</span><span>▲${q.votes||0}</span></div>
+    </div>`).join('')||'<div class="empty" style="padding:8px 0;font-size:11px;color:var(--muted);">No pending questions</div>'}
+    <div class="divider"></div>
+    <div class="sec"><span class="sec-label">My Stats</span></div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-num">💎 ${(c.diamonds||0).toLocaleString()}</div><div class="stat-lbl">Diamonds</div></div>
+      <div class="stat-box"><div class="stat-num">⏱ ${c.hours||0}</div><div class="stat-lbl">Hours Live</div></div>
+      <div class="stat-box"><div class="stat-num">${approved.length}</div><div class="stat-lbl">Q&As Done</div></div>
+      <div class="stat-box"><div class="stat-num">${progPct}%</div><div class="stat-lbl">Hub Progress</div></div>
+    </div>
+    ${c.goalDiamonds||c.goalHours?`<div class="card">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px;"><span>💎 Diamond Goal</span><span>${(c.diamonds||0).toLocaleString()} / ${(c.goalDiamonds||0).toLocaleString()}</span></div>
+      <div class="pbar"><div class="pbar-fill" style="width:${dPct}%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px;"><span>⏱ Hours Goal</span><span>${c.hours||0} / ${c.goalHours||0}</span></div>
+      <div class="pbar"><div class="pbar-fill" style="width:${hPct}%;background:linear-gradient(90deg,var(--blue),#7ab8dc)"></div></div>
+    </div>`:''}
+    <div class="card">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Update Stats</div>
+      <label class="field-label">💎 Diamonds this week</label>
+      <input type="number" id="ms-d" placeholder="e.g. 5000" min="0" value="${c.diamonds||''}"/>
+      <label class="field-label">⏱ Hours streamed</label>
+      <input type="number" id="ms-h" placeholder="e.g. 5" min="0" step="0.5" value="${c.hours||''}"/>
+      <button class="btn btn-gold" onclick="updateStats()">Update Stats</button>
+    </div>
+
+    <!-- WEEKLY MISSION -->
+    ${myMission?`<div class="sec"><span class="sec-label">Weekly Mission</span></div>
+    <div class="mission-card">
+      <div class="mission-label">🎯 This Week's Mission</div>
+      <div class="mission-title">${san(myMission.title)}</div>
+      <div class="mission-desc">${san(myMission.description||'')}</div>
+      ${myMission.reward?`<div class="mission-reward">🏆 Reward: ${san(myMission.reward)}</div>`:''}
+    </div>`:''}
+
+    <!-- MY SCHEDULE -->
+    <div class="sec"><span class="sec-label">My Schedule</span></div>
+    <div class="card">
+      ${mySched?`<div style="margin-bottom:10px;"><div style="font-family:var(--serif);font-size:15px;color:var(--gold);">${san(mySched.day)} · ${san(mySched.time)}</div>${mySched.topic?`<div style="font-size:11px;color:var(--muted);margin-top:3px;">${san(mySched.topic)}</div>`:''}</div>`:'<p style="font-size:11px;color:var(--muted);margin-bottom:10px;">No schedule posted yet</p>'}
+      <div id="sched-form"></div>
+      <button class="btn btn-ghost" onclick="showSchedForm()" style="font-size:11px;">${mySched?'Edit Schedule':'Post Schedule'}</button>
+    </div>
+
+    <!-- RUN SHEET -->
+    <div class="sec"><span class="sec-label">My Run Sheet</span></div>
+    <div class="card">
+      ${myRunsheet&&myRunsheet.items&&myRunsheet.items.length?
+        myRunsheet.items.map(i=>`<div class="runsheet-item"><div class="rs-time">${san(i.time)}</div><div class="rs-task">${san(i.task)}</div></div>`).join('')
+        :'<div class="empty" style="padding:10px 0;font-size:11px;color:var(--muted);">No run sheet yet — your agency will add this</div>'}
+    </div>
+
+    <!-- AGENCY DMs -->
+    <div class="sec"><span class="sec-label">Messages from Agency</span></div>
+    ${myDMs.length?myDMs.map(d=>`<div class="dm-card dm-from-agency">
+      <div class="dm-meta">📬 From Bloom & Co Agency</div>
+      <div class="dm-text">${san(d.message)}</div>
+      <div class="dm-date">${fmtDate(d.createdAt)}</div>
+    </div>`).join(''):'<div class="empty"><div class="empty-icon">📬</div>No messages yet</div>'}
+
+    <!-- ANNOUNCEMENTS -->
+    <div class="sec"><span class="sec-label">Announcements</span></div>
+    ${anns.length?anns.map(a=>`<div class="ann-card"><div class="ann-label">📢 Agency</div><div class="ann-text">${san(a.text)}</div><div class="ann-date">${fmtDate(a.createdAt)}</div></div>`).join('')
+    :'<div class="empty"><div class="empty-icon">📢</div>No announcements</div>'}
+
+    <!-- SCOUTING MANAGER (Tier 1+) -->
+    ${myTier>=1&&c.scoutingManager?`<div class="sec"><span class="sec-label">Scouting Manager</span></div>
+    <div class="card card-gold">
+      <div style="font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">👤 Your Point of Contact</div>
+      <div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px;">${san(c.scoutingManager)}</div>
+      ${c.scoutingContact?`<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${san(c.scoutingContact)}</div><button class="btn btn-gold" onclick="copyText('${c.scoutingContact.replace(/'/g,"\\'")}')">Copy Contact</button>`:''}
+    </div>`:''}
+
+    <!-- DISCORD + LINKS -->
+    <div class="sec"><span class="sec-label">Community</span></div>
+    <div class="ql-row">
+      <a href="${LINKS.discord}" target="_blank" class="ql"><span class="ql-icon">💬</span><span class="ql-label">Discord</span></a>
+      <a href="${LINKS.tiktok}" target="_blank" class="ql"><span class="ql-icon">📱</span><span class="ql-label">TikTok</span></a>
+      <a href="${LINKS.website}" target="_blank" class="ql"><span class="ql-icon">🌐</span><span class="ql-label">Website</span></a>
+    </div>
+
+    <!-- BRAND DEALS -->
+    <div class="sec"><span class="sec-label">Brand Deals</span></div>
+    ${dealIn?renderDealsContent():dealsGate()}
+
+    <!-- HYPE WALL -->
+    <div class="sec"><span class="sec-label">Hype Wall</span></div>
+    <div class="card" style="margin-bottom:10px;">
+      <label class="field-label">Send a hype message</label>
+      <input type="text" id="hype-from" placeholder="Your name or @handle" maxlength="40"/>
+      <textarea id="hype-msg" placeholder="Send some love or hype! 🔥" maxlength="200"></textarea>
+      <!-- honeypot -->
+      <input type="text" id="hp-hype" name="url" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;" aria-hidden="true"/>
+      <button class="btn btn-gold" onclick="submitHype()">Send ✨</button>
+      <p style="font-size:10px;color:var(--muted);margin-top:4px;">Messages go to approval before showing</p>
+    </div>
+    ${myHype.length?myHype.slice(0,10).map(h=>`<div class="hype-card">
+      <div class="hype-msg">"${san(h.message)}"</div>
+      <div class="hype-from">— ${san(h.from||'Anonymous')}</div>
+      <div class="hype-heart">💛</div>
+    </div>`).join(''):'<div class="empty"><div class="empty-icon">✨</div>Be the first to send hype!</div>'}
+
+    <!-- HUB VIDEOS -->
+    <div class="sec"><span class="sec-label">Creator Hub</span></div>
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="flex:1;">
+          <div style="font-size:11px;color:var(--muted);">Academy Progress</div>
+          <div style="font-size:18px;font-family:var(--serif);color:var(--gold);margin-top:2px;">${watchedMine} / ${myVids.length} videos</div>
+        </div>
+        <div style="width:52px;height:52px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:14px;font-weight:600;color:var(--gold);">${progPct}%</div>
+      </div>
+      <div class="pbar" style="margin-top:10px;margin-bottom:0;"><div class="pbar-fill" style="width:${progPct}%"></div></div>
+    </div>
+    ${TIER_ORDER.map(t=>{
+      const ti2=TIERS[t]||{label:`Tier ${t}`,cls:'',color:'var(--muted)'};
+      const tVids=allVids.filter(v=>(parseInt(v.tier)||1)===t&&(!v.niche||v.niche===c.niche||v.niche==='all'));
+      const canAccess=myTier>=t;
+      return `<div style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="badge ${ti2.cls}">${ti2.label}</span>
+          <div style="height:1px;flex:1;background:var(--border);"></div>
+        </div>
+        ${canAccess?(tVids.length?renderFolders(tVids):`<div class="locked-box" style="border-color:var(--border);background:rgba(255,255,255,0.02);"><div class="locked-icon">📂</div><div class="locked-title" style="color:var(--muted);">Content Coming Soon</div></div>`)
+        :`<div class="locked-box">
+  <div class="locked-icon">🔒</div>
+  <div class="locked-title">${ti2.label}</div>
+  <div class="locked-sub">${
+    t===2?'This content is locked to Multi-Platform Hub members. Contact your agency to upgrade your tier.':
+    t===3?'This content is locked to Business Builder members. Contact your agency to upgrade your tier.':
+    'This content is locked to Sub-Agency Partner members. Contact your agency to apply for this tier.'
+  }</div>
+  <div style="margin-top:10px;font-size:11px;color:var(--muted);">📩 Contact your scouting manager to upgrade</div>
+</div>`}
+      </div>`;
+    }).join('')}
+
+    <!-- GOALS -->
+    <div class="sec"><span class="sec-label">Weekly Goals</span></div>
+    <div class="card">
+      <label class="field-label">Diamond goal</label>
+      <input type="number" id="ms-gd" placeholder="e.g. 5000" value="${c.goalDiamonds||''}"/>
+      <label class="field-label">Hours goal</label>
+      <input type="number" id="ms-gh" placeholder="e.g. 5" value="${c.goalHours||''}"/>
+      <button class="btn btn-gold" onclick="saveGoals()">Save Goals</button>
+    </div>
+
+    <div style="margin-top:20px;"><button class="btn btn-ghost" onclick="creatorLogout()" style="font-size:11px;">Log Out</button></div>
+  </div>`;
+}
+
+function dealsGate(){
+  return `<div class="card">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Approved creators only. Enter your brand deals code.</p>
+    <input type="password" id="deal-pw" placeholder="Brand deals code" autocomplete="off" onkeydown="if(event.key==='Enter')unlockDeals()"/>
+    <button class="btn btn-gold" onclick="unlockDeals()">Access Deals</button>
+    <p class="auth-err" id="deal-err"></p>
+  </div>`;
+}
+function renderDealsContent(){
+  const allDeals=Object.values(deals);
+  if(!allDeals.length)return'<div class="empty"><div class="empty-icon">💼</div>No deals posted yet</div>';
+  return allDeals.map(d=>`<div class="deal-card">
+    <div class="deal-brand">${san(d.brand)}</div>
+    <div class="deal-desc">${san(d.description)}</div>
+    <div class="deal-tags">${(d.niches||[]).map(n=>`<span class="deal-tag">${niche(n)}</span>`).join('')}${d.type?`<span class="deal-tag">${san(d.type)}</span>`:''}</div>
+    <div class="deal-pay">💰 ${san(d.pay||'Pay discussed after application')}</div>
+    ${appliedDeals.includes(d.id)?'<span class="deal-applied">✓ Applied — agency will be in touch</span>'
+    :`<button class="btn btn-gold" onclick="applyDeal('${d.id}','${san(d.brand).replace(/'/g,'&#39;')}')">Apply for This Deal</button>`}
+  </div>`).join('');
+}
+
+async function unlockDeals(){
+  if(!canSubmit('deal-login',2000)){return;}
+  const pw=document.getElementById('deal-pw')?.value;
+  if(!pw)return;
+  if(_dealTries>=5){document.getElementById('deal-err').textContent='Too many attempts. Refresh to try again.';return;}
+  try{
+    const h=await sha256(pw);
+    if(h===DEAL_HASH){dealIn=true;renderCreator();}
+    else{_incDeal();const left=5-_dealTries;
+      document.getElementById('deal-err').textContent=left>0?`Incorrect code (${left} left).`:'Too many attempts.';}
+  }catch(e){document.getElementById('deal-err').textContent='Error. Try again.';}
+}
+async function applyDeal(id,brand){
+  if(!creator)return;
+  try{
+    await FS().addDoc(col('dealApplications'),{dealId:id,brand:san(brand),creatorId:creator.id,creatorName:creator.name,niche:creator.niche,appliedAt:FS().serverTimestamp()});
+    appliedDeals.push(id);localStorage.setItem('bc_applied',JSON.stringify(appliedDeals));
+    toast('Applied! ✓');renderCreator();
+  }catch(e){toast('Error',true);}
+}
+
+// Schedule form
+function showSchedForm(){
+  const days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const ex=schedules[creator?.id];
+  document.getElementById('sched-form').innerHTML=`<div style="margin-top:10px;">
+    <label class="field-label">Day</label>
+    <select id="sc-day">${days.map(d=>`<option ${ex?.day===d?'selected':''}>${d}</option>`).join('')}</select>
+    <label class="field-label">Time (e.g. 7:00 PM EST)</label>
+    <input type="text" id="sc-time" placeholder="e.g. 7:00 PM EST" value="${ex?.time||''}" maxlength="20"/>
+    <label class="field-label">Topic (optional)</label>
+    <input type="text" id="sc-topic" placeholder="What are you streaming?" value="${ex?.topic||''}" maxlength="60"/>
+    <button class="btn btn-gold" onclick="postSched()">Save Schedule</button>
+  </div>`;
+}
+async function postSched(){
+  const day=document.getElementById('sc-day')?.value;
+  const time=document.getElementById('sc-time')?.value.trim();
+  if(!time){toast('Add your live time',true);return;}
+  const dayOrder=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].indexOf(day);
+  try{
+    await FS().setDoc(ref('schedules',creator.id),{creatorId:creator.id,creatorName:creator.name,niche:creator.niche,day,time:san(time),topic:san(document.getElementById('sc-topic')?.value.trim()||''),dayOrder,live:creator.live,updatedAt:FS().serverTimestamp()});
+    toast('Schedule saved ✓');renderCreator();
+  }catch(e){toast('Error',true);}
+}
+
+async function toggleLive(){
+  const isLive=document.getElementById('live-tog')?.checked;if(!creator)return;
+  try{await FS().updateDoc(ref('creators',creator.id),{live:isLive});creator.live=isLive;
+    const el=document.getElementById('live-status');if(el)el.textContent=isLive?'🔴 You are LIVE':'⚫ You are offline';
+    toast(isLive?"You're live! 🔴":"You're offline");renderHome();
+  }catch(e){toast('Error',true);}
+}
+async function updateStats(){
+  const d=parseInt(document.getElementById('ms-d')?.value)||0;
+  const h=parseFloat(document.getElementById('ms-h')?.value)||0;
+  if(!creator)return;
+  try{await FS().updateDoc(ref('creators',creator.id),{diamonds:d,hours:h});creator.diamonds=d;creator.hours=h;toast('Stats updated ✓');renderCreator();}
+  catch(e){toast('Error',true);}
+}
+async function saveGoals(){
+  const gd=parseInt(document.getElementById('ms-gd')?.value)||0;
+  const gh=parseFloat(document.getElementById('ms-gh')?.value)||0;
+  if(!creator)return;
+  try{await FS().updateDoc(ref('creators',creator.id),{goalDiamonds:gd,goalHours:gh});creator.goalDiamonds=gd;creator.goalHours=gh;toast('Goals saved ✓');renderCreator();}
+  catch(e){toast('Error',true);}
+}
+async function submitHype(){
+  // Honeypot check
+  const hph=document.getElementById('hp-hype');
+  if(hph&&hph.value.length>0){console.log('Bot detected');return;}
+  const from=document.getElementById('hype-from')?.value.trim()||'Anonymous';
+  const msg=document.getElementById('hype-msg')?.value.trim();
+  if(!msg){toast('Write a message first',true);return;}
+  // Block injections
+  const blocked=['<script','javascript:','onerror=','eval(','<iframe','onload='];
+  if(blocked.some(b=>msg.toLowerCase().includes(b)||from.toLowerCase().includes(b))){toast('Invalid input',true);return;}
+  try{
+    await FS().addDoc(col('hypeWall'),{creatorId:creator?.id||null,from:san(from),message:san(msg),status:'pending',createdAt:FS().serverTimestamp()});
+    document.getElementById('hype-from').value='';document.getElementById('hype-msg').value='';
+    toast('Sent for approval! ✓');
+  }catch(e){toast('Error',true);}
+}
+
+// Creator Login
+function showCreatorLogin(){
+  document.getElementById('s-creator').innerHTML=`<div class="wrap"><div class="auth-wrap">
+    ${logoEl('auth-logo')}
+    <p class="auth-title">Creator Hub</p>
+    <p class="auth-sub">This is a private dashboard for Bloom & Co agency creators only. Enter your invite code to access your hub.</p>
+    <input type="text" id="c-code" placeholder="e.g. LUNA-PET-7742" style="text-transform:uppercase;letter-spacing:.05em;text-align:center;" maxlength="20" autocapitalize="characters" autocorrect="off" onkeydown="if(event.key==='Enter')creatorLogin()"/>
+    <button class="btn btn-gold" onclick="creatorLogin()">Access My Hub</button>
+    <p class="auth-err" id="c-err"></p>
+    <div style="margin-top:20px;padding:14px;background:rgba(200,168,90,0.06);border:1px solid var(--border);border-radius:var(--r);">
+      <p style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Not an agency creator?</p>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:10px;">Check out our public training programs and courses at Bloom & Co Network.</p>
+      <a href="https://whop.com/bloom-co-network" target="_blank" style="display:block;text-align:center;padding:10px;background:rgba(200,168,90,0.1);border:1px solid var(--border2);border-radius:var(--rs);font-size:11px;font-weight:700;color:var(--gold);text-decoration:none;">Join Bloom & Co on Whop →</a>
+    </div>
+  </div></div>`;
+}
+async function creatorLogin(){
+  const code=document.getElementById('c-code')?.value.trim().toUpperCase();
+  if(!code){document.getElementById('c-err').textContent='Enter your code';return;}
+  document.getElementById('c-err').textContent='Checking...';
+  try{
+    const inv=await FS().getDoc(ref('invites',code));
+    if(inv.exists()&&!inv.data().used){showSetupForm(inv.data().niche,code);return;}
+    const snap=await FS().getDocs(FS().query(col('creators'),FS().where('code','==',code)));
+    if(!snap.empty){const d=snap.docs[0];creator={id:d.id,...d.data()};localStorage.setItem('bc_cc',code);subCreator();renderCreator();return;}
+    document.getElementById('c-err').textContent='Code not found. Contact your agency.';
+  }catch(e){document.getElementById('c-err').textContent='Connection error.';}
+}
+let _selectedEmoji='🐾';
+function showSetupForm(dn,code){
+  document.getElementById('s-creator').innerHTML=`<div class="wrap"><div class="card" style="margin-top:10px;">
+    <p style="font-family:var(--serif);font-size:18px;color:var(--gold);margin-bottom:12px;">Complete Your Profile</p>
+    <label class="field-label">Creator name</label>
+    <input type="text" id="s-name" placeholder="Your name" maxlength="40"/>
+    <label class="field-label">Your niche</label>
+    <select id="s-niche">
+      <option value="">Select niche...</option>
+      <option value="pets" ${dn==='pets'?'selected':''}>🐾 Pets</option>
+      <option value="beauty" ${dn==='beauty'?'selected':''}>✨ Beauty</option>
+      <option value="lifestyle" ${dn==='lifestyle'?'selected':''}>🌿 Lifestyle</option>
+    </select>
+    <label class="field-label">Pick your emoji</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+      ${['🐶','🐱','🐰','🐹','🦊','✨','💄','💅','💋','🌿','☕','🌸','🎀','🦋','🌺'].map(e=>`<span style="font-size:24px;cursor:pointer;padding:6px;border-radius:var(--rs);border:2px solid transparent;transition:all .2s;" onclick="pickEmoji(this,'${e}')">${e}</span>`).join('')}
+    </div>
+    <button class="btn btn-gold" onclick="completeSetup('${code}')">Save & Enter Hub</button>
+    <p class="auth-err" id="s-err"></p>
+  </div></div>`;
+}
+function pickEmoji(el,e){document.querySelectorAll('[onclick^="pickEmoji"]').forEach(x=>{x.style.borderColor='transparent';x.style.background='transparent';});el.style.borderColor='var(--gold)';el.style.background='var(--gold3)';_selectedEmoji=e;}
+async function completeSetup(code){
+  const name=document.getElementById('s-name')?.value.trim();
+  const n=document.getElementById('s-niche')?.value;
+  if(!name){document.getElementById('s-err').textContent='Enter your name';return;}
+  if(!n){document.getElementById('s-err').textContent='Select your niche';return;}
+  try{
+    await FS().updateDoc(ref('invites',code),{used:true});
+    const cr=await FS().addDoc(col('creators'),{name:san(name),niche:n,emoji:_selectedEmoji,code,live:false,diamonds:0,hours:0,tier:'1',createdAt:FS().serverTimestamp()});
+    creator={id:cr.id,name,niche:n,emoji:_selectedEmoji,code,live:false,diamonds:0,hours:0,tier:'1'};
+    localStorage.setItem('bc_cc',code);subCreator();renderCreator();toast('Welcome to Bloom & Co! 🌸');
+  }catch(e){document.getElementById('s-err').textContent='Error. Try again.';}
+}
+function creatorLogout(){localStorage.removeItem('bc_cc');creator=null;dealIn=false;showCreatorLogin();}
+function subCreator(){
+  if(!creator)return;
+  const q=FS().query(col('questions'),FS().where('creatorId','==',creator.id));
+  FS().onSnapshot(q,snap=>{snap.docs.forEach(d=>questions[d.id]={id:d.id,...d.data()});if(document.getElementById('s-creator').classList.contains('active'))renderCreator();});
+  FS().onSnapshot(FS().query(col('dms'),FS().where('creatorId','==',creator.id)),snap=>{snap.docs.forEach(d=>dms[d.id]={id:d.id,...d.data()});if(document.getElementById('s-creator').classList.contains('active'))renderCreator();});
+  FS().onSnapshot(FS().query(col('dms'),FS().where('creatorId','==','all')),snap=>{snap.docs.forEach(d=>dms['all_'+d.id]={id:d.id,...d.data()});if(document.getElementById('s-creator').classList.contains('active'))renderCreator();});
+}
+
+// ══ MOD / AGENCY PANEL ════════════════════════════════════════
+function renderMod(){
+  const s=document.getElementById('s-mod');
+  if(!modIn){showModLogin();return;}
+  const pending=Object.values(questions).filter(q=>q.status==='pending').sort((a,b)=>(b.votes||0)-(a.votes||0));
+  const approved=Object.values(questions).filter(q=>q.status==='approved');
+  const allC=Object.values(creators).filter(c=>!c.deleted).sort((a,b)=>(b.diamonds||0)-(a.diamonds||0));
+  const allSched=Object.values(schedules).sort((a,b)=>(a.dayOrder||7)-(b.dayOrder||7));
+  const apps=Object.values(window.__bc_apps||{});
+  const pendingHype=Object.values(hypeWall).filter(h=>h.status==='pending');
+  const approvedHype=Object.values(hypeWall).filter(h=>h.status==='approved');
+  const allMissions=Object.values(missions).filter(m=>!m.deleted);
+  const cName=id=>creators[id]?.name||'Unknown';
+
+  s.innerHTML=`<div class="wrap">
+    <div style="text-align:center;margin-bottom:16px;">
+      <p style="font-family:var(--serif);font-size:22px;color:var(--gold);">Agency Panel</p>
+    </div>
+
+    <!-- LOGO -->
+    <div class="card">
+      <div class="sec" style="margin:0 0 10px;"><span class="sec-label">App Logo</span></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+  <img src="${localStorage.getItem('bc_logo')||LOGO_SRC}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:1.5px solid var(--gold);"/>
+        <div style="flex:1;display:flex;gap:8px;">
+          <button class="btn btn-gold" onclick="uploadLogo()" style="flex:1;">📷 Upload</button>
+          ${localStorage.getItem('bc_logo')?'<button class="btn btn-ghost" onclick="removeLogo()" style="flex:0 0 auto;width:auto;padding:12px 14px;">Remove</button>':''}
+        </div>
+      </div>
+    </div>
+
+    <!-- INVITE -->
+    <div class="card">
+      <div class="sec" style="margin:0 0 10px;"><span class="sec-label">Generate Invite Code</span></div>
+      <select id="inv-niche"><option value="pets">🐾 Pets</option><option value="beauty">✨ Beauty</option><option value="lifestyle">🌿 Lifestyle</option></select>
+      <button class="btn btn-gold" onclick="genInvite()">Generate Code</button>
+      <div id="inv-result" style="margin-top:6px;"></div>
+    </div>
+
+    <!-- ANNOUNCEMENT -->
+    <div class="card">
+      <div class="sec" style="margin:0 0 10px;"><span class="sec-label">Post Announcement</span></div>
+      <textarea id="ann-text" placeholder="Post to the home screen and creator feed..."></textarea>
+      <button class="btn btn-gold" onclick="postAnn()">Post</button>
+    </div>
+
+    <!-- DIRECT MESSAGE -->
+    <div class="card">
+      <div class="sec" style="margin:0 0 10px;"><span class="sec-label">Send DM to Creator</span></div>
+      <select id="dm-creator">
+        <option value="all">📢 All Creators</option>
+        ${allC.map(c=>`<option value="${c.id}">${san(c.name)}</option>`).join('')}
+      </select>
+      <textarea id="dm-msg" placeholder="Private message from agency..."></textarea>
+      <button class="btn btn-gold" onclick="sendDM()">Send Message</button>
+    </div>
+
+    <!-- WEEKLY MISSION -->
+    <div class="card">
+      <div class="sec" style="margin:0 0 10px;"><span class="sec-label">Weekly Mission</span></div>
+      ${allMissions.map(m=>`<div class="card-sm" style="margin-bottom:6px;">
+        <div style="font-size:13px;font-weight:600;color:var(--white);">${san(m.title)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">${san(m.description||'')}</div>
+        ${m.reward?`<div style="font-size:10px;color:var(--gold);margin-top:3px;">🏆 ${san(m.reward)}</div>`:''}
+        <button class="btn-sm btn-danger" onclick="deleteMission('${m.id}')" style="margin-top:6px;">Delete</button>
+      </div>`).join('')}
+      <label class="field-label" style="margin-top:8px;">Mission Title</label>
+      <input type="text" id="mis-title" placeholder="e.g. Hit 10,000 diamonds this week" maxlength="60"/>
+      <label class="field-label">Description</label>
+      <textarea id="mis-desc" placeholder="Details of the mission..."></textarea>
+      <label class="field-label">Reward</label>
+      <input type="text" id="mis-reward" placeholder="e.g. Feature on agency page" maxlength="80"/>
+      <button class="btn btn-gold" onclick="postMission()">Post Mission</button>
+    </div>
+
+    <!-- RUN SHEET -->
+    <div class="card">
+      <div class="sec" style="margin:0 0 10px;"><span class="sec-label">Creator Run Sheet</span></div>
+      <select id="rs-creator">${allC.map(c=>`<option value="${c.id}">${san(c.name)}</option>`).join('')}</select>
+      <div id="rs-items-wrap">
+        <div id="rs-items"></div>
+        <button class="btn btn-ghost" onclick="addRSItem()" style="font-size:11px;margin-bottom:8px;">+ Add Item</button>
+      </div>
+      <button class="btn btn-gold" onclick="saveRunsheet()">Save Run Sheet</button>
+    </div>
+
+    <!-- ADD VIDEO -->
+    <div class="card">
+      <div class="sec" style="margin:0 0 10px;"><span class="sec-label">Add Hub Video</span></div>
+      <label class="field-label">Title</label>
+      <input type="text" id="v-title" placeholder="Video title" maxlength="80"/>
+      <label class="field-label">YouTube Link</label>
+      <input type="url" id="v-url" placeholder="youtube.com/watch?v=..." maxlength="200"/>
+      <label class="field-label">Description (optional)</label>
+      <input type="text" id="v-desc" placeholder="Short description" maxlength="100"/>
+      <label class="field-label">Folder / Category (groups videos together)</label>
+      <input type="text" id="v-cat" placeholder="e.g. Live Strategy, Gifting, Getting Started" maxlength="50"/>
+      <label class="field-label">Lesson Number (order)</label>
+      <input type="number" id="v-order" placeholder="1, 2, 3 etc — controls order" min="1" max="999"/>
+      <label class="field-label">Tier access</label>
+      <select id="v-tier">
+        <option value="1">⭐ Creator Academy (Tier 1+)</option>
+        <option value="2">📱 Multi-Platform Hub (Tier 2+)</option>
+        <option value="3">💼 Business Builder (Tier 3+)</option>
+        <option value="4">🤝 Sub-Agency Partner (Tier 4 only)</option>
+      </select>
+      <label class="field-label">Niche</label>
+      <select id="v-niche">
+        <option value="all">All niches</option>
+        <option value="pets">🐾 Pets only</option>
+        <option value="beauty">✨ Beauty only</option>
+        <option value="lifestyle">🌿 Lifestyle only</option>
+      </select>
+      <button class="btn btn-gold" onclick="addVideo()">Add Video</button>
+    </div>
+
+    <!-- BRAND DEAL -->
+    <div class="card">
+      <div class="sec" style="margin:0 0 10px;"><span class="sec-label">Post Brand Deal</span></div>
+      <input type="text" id="d-brand" placeholder="Brand name" maxlength="60"/>
+      <textarea id="d-desc" placeholder="What does the brand need?"></textarea>
+      <input type="text" id="d-pay" placeholder="Pay e.g. $200 flat fee" maxlength="60"/>
+      <input type="text" id="d-type" placeholder="Type e.g. Sponsored Live" maxlength="40"/>
+      <div style="display:flex;gap:14px;margin-bottom:10px;">
+        <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;"><input type="checkbox" id="d-pets"> 🐾 Pets</label>
+        <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;"><input type="checkbox" id="d-beauty"> ✨ Beauty</label>
+        <label style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;"><input type="checkbox" id="d-lifestyle"> 🌿 Lifestyle</label>
+      </div>
+      <button class="btn btn-gold" onclick="postDeal()">Post Deal</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- CREATORS -->
+    <div class="sec"><span class="sec-label">All Creators (${allC.length})</span></div>
+    ${allC.map((c,i)=>`<div class="card" style="padding:12px 14px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="font-family:var(--serif);font-size:15px;font-weight:700;color:${i===0?'var(--gold)':i===1?'#bbb':i===2?'#CD7F32':'var(--muted)'};min-width:22px;">${i===0?'👑':i===1?'🥈':i===2?'🥉':i+1}</div>
+        <div class="c-avatar" style="width:36px;height:36px;font-size:18px;">${c.emoji||'🎬'}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;">${san(c.name)}</div>
+          <div style="font-size:10px;color:var(--muted);">${niche(c.niche)} · 💎${(c.diamonds||0).toLocaleString()} · ${c.hours||0}h · Code: <span style="color:var(--gold);">${c.code}</span></div>
+        </div>
+        ${c.live?'<span class="badge badge-live">Live</span>':''}
+      </div>
+      <div style="margin-bottom:8px;">
+        <div class="tier-btns">
+          ${TIER_ORDER.map(t=>`<button class="tbtn ${(parseInt(c.tier)||0)===t?`t${t}`:''}\" onclick="setTier('${c.id}','${t}')">${t===1?'Academy':t===2?'Multi-Plat':t===3?'Business':'Partner'}</button>`).join('')}
+          <button class="tbtn" style="color:var(--red);border-color:rgba(204,74,74,0.3);background:rgba(204,74,74,0.07);margin-left:auto;" onclick="removeCreator('${c.id}','${san(c.name).replace(/'/g,'&#39;')}')">🗑</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <input type="text" id="sk-${c.id}" placeholder="Stream key / live link" value="${c.streamKey||''}" style="flex:1;margin:0;font-size:11px;padding:7px 10px;"/>
+        <button class="btn-sm btn-approve" onclick="saveStreamKey('${c.id}')" style="flex:0 0 auto;">Save Key</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+        <input type="text" id="sm-${c.id}" placeholder="Scouting manager name" value="${c.scoutingManager||''}" style="flex:1;margin:0;font-size:11px;padding:7px 10px;"/>
+        <input type="text" id="sc-${c.id}" placeholder="Contact (phone/email)" value="${c.scoutingContact||''}" style="flex:1;margin:0;font-size:11px;padding:7px 10px;"/>
+        <button class="btn-sm btn-approve" onclick="saveScoutingInfo('${c.id}')" style="flex:0 0 auto;">Save</button>
+      </div>
+    </div>`).join('')||'<div class="empty">No creators yet</div>'}
+
+    <div class="divider"></div>
+
+    <!-- SCHEDULES -->
+    <div class="sec"><span class="sec-label">Schedule Board (${allSched.length})</span></div>
+    ${allSched.map(sc=>`<div class="sched-card">
+      <div><div class="sched-day">${san(sc.day)}</div><div style="font-size:10px;color:var(--muted);">${san(sc.time)}</div></div>
+      <div style="flex:1;"><div class="sched-name">${san(sc.creatorName)}</div><div style="font-size:10px;color:var(--muted);">${niche(sc.niche)}</div></div>
+    </div>`).join('')||'<div class="empty">No schedules</div>'}
+
+    <div class="divider"></div>
+
+    <!-- HYPE WALL MOD -->
+    <div class="sec"><span class="sec-label">Hype Wall — Pending (${pendingHype.length})</span></div>
+    ${pendingHype.map(h=>`<div class="q-card">
+      <div class="q-text">"${san(h.message)}"</div>
+      <div class="q-meta"><span>${san(h.from||'Anonymous')}</span></div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn-sm btn-approve" onclick="modHype('${h.id}','approved')">✓ Approve</button>
+        <button class="btn-sm btn-reject" onclick="modHype('${h.id}','rejected')">✕ Reject</button>
+      </div>
+    </div>`).join('')||'<div class="empty">All caught up ✓</div>'}
+
+    <div class="divider"></div>
+
+    <!-- QUESTION MOD -->
+    <div class="sec"><span class="sec-label">Pending Questions (${pending.length})</span></div>
+    ${pending.map(q=>`<div class="q-card">
+      <div class="q-meta" style="margin-bottom:6px;"><span style="font-weight:700;color:var(--gold);">${san(cName(q.creatorId))}</span><span>${san(q.name||'@anon')}</span><span>▲${q.votes||0}</span></div>
+      <div class="q-text">${san(q.text)}</div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn-sm btn-approve" onclick="modQ('${q.id}','approved')">✓ Approve</button>
+        <button class="btn-sm btn-reject" onclick="modQ('${q.id}','rejected')">✕ Reject</button>
+      </div>
+    </div>`).join('')||'<div class="empty">All caught up ✓</div>'}
+
+    <div class="sec"><span class="sec-label">Approved (${approved.length})</span></div>
+    ${approved.map(q=>`<div class="q-card">
+      <div class="q-meta" style="margin-bottom:5px;"><span style="color:var(--gold);">${san(cName(q.creatorId))}</span><span>${san(q.name||'@anon')}</span></div>
+      <div class="q-text">${san(q.text)}</div>
+      <button class="btn-sm btn-reject" onclick="modQ('${q.id}','rejected')" style="margin-top:6px;">Remove</button>
+    </div>`).join('')||'<div class="empty">No approved questions</div>'}
+
+    ${apps.length?`<div class="divider"></div>
+    <div class="sec"><span class="sec-label">Deal Applications (${apps.length})</span></div>
+    ${apps.map(a=>`<div class="q-card"><div class="q-meta" style="margin-bottom:4px;"><span style="color:var(--gold);">${san(a.brand)}</span></div><div style="font-size:12px;">${san(a.creatorName)} · ${niche(a.niche)}</div></div>`).join('')}`:''}
+
+    <!-- ALL HUB VIDEOS -->
+    <div class="divider"></div>
+    <div class="sec"><span class="sec-label">Hub Videos (${Object.values(hubVideos).filter(v=>!v.deleted).length})</span></div>
+    ${Object.values(hubVideos).filter(v=>!v.deleted).sort((a,b)=>(a.order||999)-(b.order||999)).map(v=>`<div style="position:relative;">${vidCard(v,true)}</div>`).join('')||'<div class="empty">No videos yet</div>'}
+
+    <div style="margin-top:20px;"><button class="btn btn-ghost" onclick="modLogout()" style="font-size:11px;">Log Out</button></div>
+  </div>`;
+
+  // init runsheet items
+  initRSItems();
+}
+
+function showModLogin(){
+  document.getElementById('s-mod').innerHTML=`<div class="wrap"><div class="auth-wrap">
+    ${logoEl('auth-logo')}
+    <p class="auth-title">Agency Panel</p>
+    <p class="auth-sub">Agency access only</p>
+    <input type="password" id="mod-pw" placeholder="Agency password" autocomplete="off" onkeydown="if(event.key==='Enter')unlockMod()"/>
+    <button class="btn btn-gold" onclick="unlockMod()">Enter</button>
+    <p class="auth-err" id="mod-err"></p>
+  </div></div>`;
+}
+async function unlockMod(){
+  if(!canSubmit('mod-login',2000)){return;}
+  const pw=document.getElementById('mod-pw')?.value;
+  if(!pw)return;
+  if(_modTries>=5){document.getElementById('mod-err').textContent='Too many attempts. Refresh.';document.getElementById('mod-pw').disabled=true;return;}
+  document.getElementById('mod-err').textContent='Checking...';
+  try{
+    const h=await sha256(pw);
+    if(h===MOD_HASH){modIn=true;subModData();renderMod();}
+    else{_incMod();const left=5-_modTries;
+      document.getElementById('mod-err').textContent=left>0?`Incorrect (${left} left).`:'Too many attempts.';}
+  }catch(e){document.getElementById('mod-err').textContent='Error.';}
+}
+function modLogout(){modIn=false;renderMod();}
+
+// ── MOD ACTIONS ────────────────────────────────────────────────
+async function modQ(id,status){try{await FS().updateDoc(ref('questions',id),{status});toast(status==='approved'?'Approved ✓':'Removed');}catch(e){toast('Error',true);}}
+async function modHype(id,status){try{await FS().updateDoc(ref('hypeWall',id),{status});toast(status==='approved'?'Approved ✓':'Rejected');}catch(e){toast('Error',true);}}
+async function setTier(cid,t){
+  try{await FS().updateDoc(ref('creators',cid),{tier:String(t),tierUpdatedAt:FS().serverTimestamp()});if(creators[cid])creators[cid].tier=String(t);if(creator?.id===cid)creator.tier=String(t);toast(`Tier ${t} set ✓`);renderMod();}
+  catch(e){toast('Error',true);}
+}
+async function saveStreamKey(cid){
+  const key=document.getElementById('sk-'+cid)?.value.trim();
+  try{await FS().updateDoc(ref('creators',cid),{streamKey:san(key)});if(creators[cid])creators[cid].streamKey=san(key);toast('Stream key saved ✓');}
+  catch(e){toast('Error',true);}
+}
+async function saveScoutingInfo(cid){
+  const mgr=document.getElementById('sm-'+cid)?.value.trim();
+  const ctc=document.getElementById('sc-'+cid)?.value.trim();
+  try{await FS().updateDoc(ref('creators',cid),{scoutingManager:san(mgr),scoutingContact:san(ctc)});if(creators[cid]){creators[cid].scoutingManager=san(mgr);creators[cid].scoutingContact=san(ctc);}if(creator?.id===cid){creator.scoutingManager=san(mgr);creator.scoutingContact=san(ctc);}toast('Scouting info saved ✓');}
+  catch(e){toast('Error',true);}
+}
+async function removeCreator(id,name){
+  if(!confirm(`Remove ${name}?`))return;
+  try{await FS().updateDoc(ref('creators',id),{deleted:true});delete creators[id];toast(`${name} removed`);renderMod();}
+  catch(e){toast('Error',true);}
+}
+async function genInvite(){
+  const n=document.getElementById('inv-niche')?.value;
+  const w={pets:['LUNA','PAWS','BOOP','FUZZ','WOOF'],beauty:['GLOW','MUSE','LUXE','ROSE','GLAM'],lifestyle:['VIBE','FLOW','BLOOM','CHILL','AURA']};
+  const a=w[n]||w.pets;
+  const code=`${a[Math.floor(Math.random()*a.length)]}-${n.toUpperCase().slice(0,3)}-${Math.floor(1000+Math.random()*9000)}`;
+  try{await FS().setDoc(ref('invites',code),{niche:n,used:false,createdAt:FS().serverTimestamp()});document.getElementById('inv-result').innerHTML=`<div class="invite-box"><span>${code}</span><button class="copy-btn" onclick="copyText('${code}')">Copy</button></div><p style="font-size:9px;color:var(--muted);">One-time use · ${n}</p>`;toast('Code generated ✓');}
+  catch(e){toast('Error',true);}
+}
+async function postAnn(){
+  const text=document.getElementById('ann-text')?.value.trim();if(!text){toast('Write something first',true);return;}
+  try{await FS().addDoc(col('announcements'),{text:san(text),createdAt:FS().serverTimestamp()});document.getElementById('ann-text').value='';toast('Posted ✓');}
+  catch(e){toast('Error',true);}
+}
+async function sendDM(){
+  const cid=document.getElementById('dm-creator')?.value;
+  const msg=document.getElementById('dm-msg')?.value.trim();if(!msg){toast('Write a message',true);return;}
+  try{await FS().addDoc(col('dms'),{creatorId:cid,message:san(msg),createdAt:FS().serverTimestamp()});document.getElementById('dm-msg').value='';toast('Message sent ✓');}
+  catch(e){toast('Error',true);}
+}
+async function postMission(){
+  const title=document.getElementById('mis-title')?.value.trim();if(!title){toast('Add a title',true);return;}
+  try{await FS().addDoc(col('missions'),{title:san(title),description:san(document.getElementById('mis-desc')?.value.trim()||''),reward:san(document.getElementById('mis-reward')?.value.trim()||''),createdAt:FS().serverTimestamp()});document.getElementById('mis-title').value='';document.getElementById('mis-desc').value='';document.getElementById('mis-reward').value='';toast('Mission posted ✓');}
+  catch(e){toast('Error',true);}
+}
+async function deleteMission(id){
+  try{await FS().updateDoc(ref('missions',id),{deleted:true});delete missions[id];toast('Mission deleted');renderMod();}
+  catch(e){toast('Error',true);}
+}
+let _rsItems=[];
+function initRSItems(){_rsItems=[];renderRSItems();}
+function addRSItem(){_rsItems.push({time:'',task:''});renderRSItems();}
+function renderRSItems(){
+  const wrap=document.getElementById('rs-items');if(!wrap)return;
+  wrap.innerHTML=_rsItems.map((item,i)=>`<div style="display:flex;gap:6px;margin-bottom:6px;">
+    <input type="text" placeholder="Time" value="${san(item.time)}" oninput="_rsItems[${i}].time=this.value" style="width:80px;flex:0 0 80px;margin:0;font-size:11px;padding:7px 9px;"/>
+    <input type="text" placeholder="Task / segment" value="${san(item.task)}" oninput="_rsItems[${i}].task=this.value" style="flex:1;margin:0;font-size:11px;padding:7px 9px;"/>
+    <button onclick="_rsItems.splice(${i},1);renderRSItems()" style="width:28px;height:34px;border-radius:var(--rs);background:rgba(204,74,74,0.1);border:1px solid rgba(204,74,74,0.25);color:var(--red);cursor:pointer;flex-shrink:0;">✕</button>
+  </div>`).join('');
+}
+async function saveRunsheet(){
+  const cid=document.getElementById('rs-creator')?.value;if(!cid){toast('Select a creator',true);return;}
+  const items=_rsItems.filter(i=>i.task.trim());
+  try{await FS().setDoc(ref('runsheets',cid),{creatorId:cid,items:items.map(i=>({time:san(i.time),task:san(i.task)})),updatedAt:FS().serverTimestamp()});runsheets[cid]={creatorId:cid,items};toast('Run sheet saved ✓');}
+  catch(e){toast('Error',true);}
+}
+let _addingVid=false;
+async function addVideo(){
+  if(_addingVid)return;
+  const title=document.getElementById('v-title')?.value.trim();
+  const url=document.getElementById('v-url')?.value.trim();
+  const order=parseInt(document.getElementById('v-order')?.value)||999;
+  if(!title||!url){toast('Add title and YouTube link',true);return;}
+  const isYT=url.includes('youtube.com')||url.includes('youtu.be');
+  if(!isYT){toast('Please use a YouTube link',true);return;}
+  _addingVid=true;const btn=document.querySelector('[onclick="addVideo()"]');if(btn){btn.textContent='Adding...';btn.disabled=true;}
+  try{
+    const cat=document.getElementById('v-cat')?.value.trim()||'General';
+    await FS().addDoc(col('hubVideos'),{title:san(title),url:san(url),description:san(document.getElementById('v-desc')?.value.trim()||''),category:san(cat),tier:document.getElementById('v-tier')?.value||'1',niche:document.getElementById('v-niche')?.value||'all',order,deleted:false,createdAt:FS().serverTimestamp()});
+    document.getElementById('v-title').value='';document.getElementById('v-url').value='';document.getElementById('v-desc').value='';if(document.getElementById('v-cat'))document.getElementById('v-cat').value='';document.getElementById('v-order').value='';
+    toast('Video added ✓');
+  }catch(e){toast('Error',true);}
+  finally{_addingVid=false;if(btn){btn.textContent='Add Video';btn.disabled=false;}}
+}
+async function deleteVid(id,title){
+  if(!confirm(`Delete "${title}"?`))return;
+  try{await FS().updateDoc(ref('hubVideos',id),{deleted:true});delete hubVideos[id];toast('Video deleted ✓');renderMod();}
+  catch(e){toast('Error',true);}
+}
+async function postDeal(){
+  const brand=document.getElementById('d-brand')?.value.trim();
+  const desc=document.getElementById('d-desc')?.value.trim();
+  if(!brand||!desc){toast('Add brand and description',true);return;}
+  const niches=[];
+  if(document.getElementById('d-pets')?.checked)niches.push('pets');
+  if(document.getElementById('d-beauty')?.checked)niches.push('beauty');
+  if(document.getElementById('d-lifestyle')?.checked)niches.push('lifestyle');
+  try{await FS().addDoc(col('brandDeals'),{brand:san(brand),description:san(desc),pay:san(document.getElementById('d-pay')?.value.trim()||''),type:san(document.getElementById('d-type')?.value.trim()||''),niches,createdAt:FS().serverTimestamp()});document.getElementById('d-brand').value='';document.getElementById('d-desc').value='';toast('Deal posted ✓');}
+  catch(e){toast('Error',true);}
+}
+
+// ══ SUBSCRIPTIONS ══════════════════════════════════════════════
+function subModData(){
+  FS().onSnapshot(col('questions'),snap=>{questions={};snap.docs.forEach(d=>questions[d.id]={id:d.id,...d.data()});if(modIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('dealApplications'),snap=>{window.__bc_apps={};snap.docs.forEach(d=>window.__bc_apps[d.id]={id:d.id,...d.data()});if(modIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('hypeWall'),snap=>{hypeWall={};snap.docs.forEach(d=>hypeWall[d.id]={id:d.id,...d.data()});if(modIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('missions'),snap=>{missions={};snap.docs.forEach(d=>missions[d.id]={id:d.id,...d.data()});if(modIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('runsheets'),snap=>{runsheets={};snap.docs.forEach(d=>runsheets[d.id]={id:d.id,...d.data()});});
+}
+function startSubs(){
+  FS().onSnapshot(col('creators'),snap=>{creators={};snap.docs.forEach(d=>creators[d.id]={id:d.id,...d.data()});const n=Object.values(creators).filter(c=>c.live&&!c.deleted).length;document.getElementById('live-count').innerHTML=`<span class="pulse"></span><span>${n} Live</span>`;if(creator){const u=creators[creator.id];if(u)Object.assign(creator,u);}if(document.getElementById('s-home').classList.contains('active'))renderHome();if(modIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('questions'),snap=>{snap.docs.forEach(d=>{const ex=questions[d.id];questions[d.id]={id:d.id,...d.data(),myVote:ex?.myVote||false};});if(document.getElementById('s-fan').classList.contains('active'))renderFan();if(document.getElementById('s-creator').classList.contains('active')&&creator)renderCreator();});
+  FS().onSnapshot(col('schedules'),snap=>{schedules={};snap.docs.forEach(d=>schedules[d.id]={id:d.id,...d.data()});if(document.getElementById('s-fan').classList.contains('active'))renderFan();if(document.getElementById('s-creator').classList.contains('active')&&creator)renderCreator();});
+  FS().onSnapshot(col('brandDeals'),snap=>{deals={};snap.docs.forEach(d=>deals[d.id]={id:d.id,...d.data()});});
+  FS().onSnapshot(col('announcements'),snap=>{announcements={};snap.docs.forEach(d=>announcements[d.id]={id:d.id,...d.data()});if(document.getElementById('s-home').classList.contains('active'))renderHome();if(document.getElementById('s-creator').classList.contains('active')&&creator)renderCreator();});
+  FS().onSnapshot(col('hubVideos'),snap=>{hubVideos={};snap.docs.forEach(d=>{const v={id:d.id,...d.data()};if(!v.deleted)hubVideos[d.id]=v;});if(document.getElementById('s-creator').classList.contains('active')&&creator)renderCreator();});
+  FS().onSnapshot(col('hypeWall'),snap=>{hypeWall={};snap.docs.forEach(d=>hypeWall[d.id]={id:d.id,...d.data()});if(document.getElementById('s-creator').classList.contains('active')&&creator)renderCreator();});
+  FS().onSnapshot(col('missions'),snap=>{missions={};snap.docs.forEach(d=>missions[d.id]={id:d.id,...d.data()});if(document.getElementById('s-creator').classList.contains('active')&&creator)renderCreator();});
+  FS().onSnapshot(col('runsheets'),snap=>{runsheets={};snap.docs.forEach(d=>runsheets[d.id]={id:d.id,...d.data()});if(document.getElementById('s-creator').classList.contains('active')&&creator)renderCreator();});
+  FS().onSnapshot(col('dms'),snap=>{dms={};snap.docs.forEach(d=>dms[d.id]={id:d.id,...d.data()});if(document.getElementById('s-creator').classList.contains('active')&&creator)renderCreator();});
+}
+
+async function autoLogin(){
+  const code=localStorage.getItem('bc_cc');if(!code)return;
+  try{const snap=await FS().getDocs(FS().query(col('creators'),FS().where('code','==',code)));if(!snap.empty){const d=snap.docs[0];creator={id:d.id,...d.data()};subCreator();}}
+  catch(e){}
+}
+
+// ── BOOT ───────────────────────────────────────────────────────
+whenReady(()=>{
+  applyLogo();
+  startSubs();
+  autoLogin().then(()=>renderHome());
+});
+</script>
+</body>
+</html>
