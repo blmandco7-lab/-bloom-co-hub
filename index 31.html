@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Bloom & Co"/>
+<title>Bloom & Co</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script type="module">
+const fc={apiKey:"AIzaSyBG69_bgQbkH5PWY2icJmeK5l-IH3pPhSQ",authDomain:"bloom-co-network.firebaseapp.com",projectId:"bloom-co-network",storageBucket:"bloom-co-network.firebasestorage.app",messagingSenderId:"894635541155",appId:"1:894635541155:web:8306607225223cb8a4f516"};
+window.__BCPW={mod:atob("Qmxvb20wNjA5Lg=="),deals:atob("Qmxvb21icmFuZHMwNjA5IQ=="),seedling:atob("Qmxvb21TZWVkMjAyNA=="),grower:atob("Qmxvb21Hcm93MjAyNA=="),bloomer:atob("Qmxvb21CbG9vbTIwMjQ="),bloom:atob("Qmxvb21Hb2xkMjAyNA=="),elite:atob("Qmxvb21FbGl0ZTIwMjQ="),business:atob("Qmxvb21CdXMyMDI0"),subagency:atob("Qmxvb21TdWIyMDI0"),scout:atob("Qmxvb21TY291dDIwMjQ="),pets:atob("Qmxvb21QZXRzMjAyNA=="),beauty:atob("Qmxvb21CZWEyMDI0"),lifestyle:atob("Qmxvb21MaWYyMDI0")};
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,doc,addDoc,setDoc,getDoc,getDocs,updateDoc,onSnapshot,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const app=initializeApp(fc);const db=getFirestore(app);
+window._db=db;window._fs={collection,doc,addDoc,setDoc,getDoc,getDocs,updateDoc,onSnapshot,query,where,serverTimestamp};
+window._firebaseReady=true;window.dispatchEvent(new Event('firebaseReady'));
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --ink:#080C18;--ink2:#0E1628;--ink3:#141F38;
+  --gold:#C9A94C;--gold2:#E8CF7A;
+  --cream:#F5EFE0;--muted:#7A7060;--muted2:rgba(245,239,224,.45);
+  --border:rgba(201,169,76,.18);--border2:rgba(201,169,76,.40);
+  --green:#2ECC8A;--red:#E85454;--blue:#5BA4CF;--orange:#E5903A;--purple:#9B70CF;
+  --safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
+  --r:14px;--rs:10px;--rx:20px;
+  --fh:'Cormorant Garamond',Georgia,serif;--fb:'DM Sans',sans-serif;
+}
+html,body{height:100%;overflow:hidden;font-family:var(--fb);}
+body{background:var(--ink);color:var(--cream);position:fixed;width:100%;height:100%;overflow:hidden;}
+input,textarea,select,button{font-family:var(--fb);}
+.bg{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 20% 0%,rgba(201,169,76,.12) 0%,transparent 55%),radial-gradient(ellipse at 80% 100%,rgba(201,169,76,.07) 0%,transparent 50%),var(--ink);}
+.bg::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px,rgba(201,169,76,.07) 1px,transparent 0);background-size:32px 32px;}
+.scroll{position:fixed;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:1;padding-bottom:calc(62px + var(--safe-b));}
+.screen{display:none;min-height:100%;}.screen.active{display:block;}
+.wrap{max-width:480px;margin:0 auto;padding:76px 15px 24px;}
+.hdr{position:fixed;top:0;left:0;right:0;z-index:40;padding:9px 15px;padding-top:calc(9px + var(--safe-t));background:rgba(8,12,24,.94);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.hdr-brand{display:flex;align-items:center;gap:9px;}
+.hdr-logo{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 12px rgba(201,169,76,.35);object-position:center;}
+.hdr-name{font-family:var(--fh);font-size:17px;color:var(--gold);}
+.hdr-sub{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:1px;}
+.live-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(201,169,76,.1);border:1px solid var(--border2);border-radius:999px;font-size:11px;font-weight:600;color:var(--gold);}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.tabs{position:fixed;bottom:0;left:0;right:0;z-index:40;height:calc(60px + var(--safe-b));padding-bottom:var(--safe-b);background:rgba(8,12,24,.97);backdrop-filter:blur(24px);border-top:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:none;background:transparent;color:rgba(245,239,224,.28);font-size:8px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;transition:all .2s;padding:5px 2px;position:relative;}
+.tab.on{color:var(--gold);}
+.tab.on::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.tab-ic{font-size:19px;line-height:1;}
+.card{background:rgba(14,22,40,.75);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:11px;backdrop-filter:blur(12px);}
+.card-gold{background:linear-gradient(135deg,rgba(201,169,76,.08),rgba(14,22,40,.9));border:1px solid var(--border2);border-radius:var(--r);padding:16px;margin-bottom:11px;}
+.card-sm{background:rgba(14,22,40,.6);border:1px solid var(--border);border-radius:var(--rs);padding:11px 14px;margin-bottom:7px;}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;margin-top:5px;}
+.sec-lbl{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.14em;}
+.cnt{background:rgba(201,169,76,.12);border:1px solid var(--border);border-radius:999px;padding:2px 9px;font-size:10px;color:var(--muted);font-weight:600;}
+.div{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:18px 0;}
+input[type=text],input[type=password],input[type=number],input[type=url],textarea,select{width:100%;background:rgba(245,239,224,.05);border:1px solid rgba(245,239,224,.12);border-radius:var(--rs);padding:12px 14px;font-size:14px;color:var(--cream);outline:none;transition:all .2s;margin-bottom:9px;-webkit-appearance:none;}
+input[type=password]{letter-spacing:.1em;}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);background:rgba(201,169,76,.06);}
+textarea{resize:none;height:72px;}
+select option{background:#0E1628;}
+::placeholder{color:rgba(245,239,224,.28);}
+.btn{width:100%;padding:13px;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s;letter-spacing:.06em;text-transform:uppercase;}
+.btn-g{background:linear-gradient(135deg,#B89040,#E8CF7A,#C9A94C);color:var(--ink);box-shadow:0 4px 20px rgba(201,169,76,.35);}
+.btn-g:hover{transform:translateY(-1px);}
+.btn-gh{background:rgba(245,239,224,.06);color:var(--gold);border:1px solid var(--border2);}
+.btn-sm{padding:6px 11px;border-radius:var(--rs);font-size:10px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:all .2s;text-transform:uppercase;letter-spacing:.05em;}
+.btn-ok{background:rgba(46,204,138,.1);color:var(--green);border-color:rgba(46,204,138,.3);}
+.btn-no{background:rgba(201,169,76,.06);color:var(--gold);border-color:var(--border);}
+.btn-del{background:rgba(232,84,84,.1);color:var(--red);border-color:rgba(232,84,84,.3);}
+.hero{position:relative;margin:-76px -15px 18px;padding:108px 22px 34px;text-align:center;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,rgba(201,169,76,.18) 0%,transparent 65%);}
+.ring-wrap{position:relative;display:inline-block;margin-bottom:16px;}
+.hero-img{width:110px;height:110px;border-radius:50%;object-fit:contain;background:var(--ink2);border:3px solid var(--gold);box-shadow:0 0 0 10px rgba(201,169,76,.1),0 0 50px rgba(201,169,76,.35);position:relative;z-index:1;}
+.r1{position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(201,169,76,.35);animation:rw 3.5s ease-in-out infinite;}
+.r2{position:absolute;inset:-20px;border-radius:50%;border:1px solid rgba(201,169,76,.15);animation:rw 3.5s ease-in-out infinite .6s;}
+@keyframes rw{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.04);opacity:.5}}
+.htitle{font-family:var(--fh);font-size:30px;font-weight:700;color:var(--gold);line-height:1.1;margin-bottom:7px;}
+.hsub{font-size:13px;color:var(--muted2);line-height:1.7;font-style:italic;}
+.hgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;}
+.hcard{background:rgba(245,239,224,.04);border:1px solid var(--border);border-radius:var(--r);padding:15px 10px;text-align:center;cursor:pointer;text-decoration:none;display:block;transition:all .2s;}
+.hcard:hover{border-color:var(--gold);background:rgba(201,169,76,.07);transform:translateY(-2px);}
+.hcard-ic{font-size:26px;margin-bottom:7px;}
+.hcard-lbl{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;}
+.hcard-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.ann{background:linear-gradient(135deg,rgba(201,169,76,.07),rgba(14,22,40,.9));border:1px solid var(--border2);border-left:3px solid var(--gold);border-radius:var(--r);padding:14px;margin-bottom:9px;}
+.ann-lbl{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px;}
+.tip{background:linear-gradient(135deg,rgba(91,164,207,.06),rgba(14,22,40,.8));border:1px solid rgba(91,164,207,.18);border-radius:var(--r);padding:14px;margin-bottom:13px;}
+.tip-lbl{font-size:10px;font-weight:700;color:var(--gold2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px;}
+.tip-txt{font-size:12px;line-height:1.75;color:var(--cream);font-style:italic;}
+.crow{display:flex;align-items:center;gap:11px;padding:12px 14px;background:rgba(245,239,224,.04);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:7px;cursor:pointer;transition:all .2s;}
+.crow:hover,.crow.sel{border-color:var(--gold);background:rgba(201,169,76,.07);}
+.cav{width:44px;height:44px;border-radius:50%;background:var(--ink3);display:flex;align-items:center;justify-content:center;font-size:21px;border:2px solid var(--border2);flex-shrink:0;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.blive{background:rgba(232,84,84,.15);color:#FF7575;border:1px solid rgba(232,84,84,.3);}
+.blive::before{content:'';width:5px;height:5px;border-radius:50%;background:#FF7575;animation:pulse 1.5s infinite;}
+.boff{background:rgba(245,239,224,.04);color:var(--muted);border:1px solid rgba(245,239,224,.08);}
+.tb{padding:3px 8px;border-radius:999px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;display:inline-block;}
+.tb-s{color:#5A9A5A;border:1px solid rgba(90,154,90,.3);background:rgba(90,154,90,.1);}
+.tb-gr{color:var(--blue);border:1px solid rgba(91,164,207,.3);background:rgba(91,164,207,.08);}
+.tb-bl{color:var(--green);border:1px solid rgba(46,204,138,.3);background:rgba(46,204,138,.08);}
+.tb-bm{color:var(--orange);border:1px solid rgba(229,144,58,.3);background:rgba(229,144,58,.08);}
+.tb-e{color:var(--purple);border:1px solid rgba(155,112,207,.3);background:rgba(155,112,207,.08);}
+/* Netflix scroll row */
+.nf-row{display:flex;gap:10px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.nf-row::-webkit-scrollbar{display:none;}
+.vc{background:rgba(14,22,40,.8);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .25s;flex-shrink:0;width:160px;}
+.vc:hover{border-color:var(--gold);transform:translateY(-2px);}
+.vt{position:relative;width:100%;padding-bottom:56.25%;background:rgba(245,239,224,.04);overflow:hidden;}
+.vti{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background-size:cover;background-position:center;}
+.vti::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(8,12,24,.8) 0%,transparent 60%);}
+.pb{width:42px;height:42px;border-radius:50%;background:rgba(201,169,76,.9);color:var(--ink);font-size:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 14px rgba(0,0,0,.5),0 0 0 4px rgba(201,169,76,.2);transition:all .2s;padding-left:4px;position:relative;z-index:1;}
+.vc:hover .pb{transform:scale(1.1);background:var(--gold);}
+.vi{padding:8px 10px;}
+.vttl{font-size:11px;font-weight:600;color:var(--cream);margin-bottom:2px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.vdsc{font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.vcat{display:flex;align-items:center;gap:9px;margin:16px 0 9px;}
+.vcat::before,.vcat::after{content:'';flex:1;height:1px;background:var(--border);}
+.vcat span{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;padding:0 7px;}
+.vmod{position:fixed;inset:0;z-index:200;background:#000;display:none;flex-direction:column;}
+.vmod.open{display:flex;}
+.vmod-bar{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:13px 15px;padding-top:calc(13px + var(--safe-t));background:linear-gradient(180deg,rgba(0,0,0,.8) 0%,transparent 100%);z-index:10;}
+.vmod-ttl{font-size:12px;font-weight:600;flex:1;padding-right:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;}
+.vmod-x{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.vemb{position:absolute;inset:0;}
+.vemb iframe{width:100%;height:100%;border:none;}
+.ovl{position:fixed;inset:0;z-index:150;background:rgba(8,12,24,.85);backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;}
+.sheet{background:var(--ink2);border:1px solid var(--border2);border-radius:var(--rx) var(--rx) 0 0;width:100%;max-width:480px;padding:22px 18px;max-height:88vh;overflow-y:auto;padding-bottom:calc(22px + var(--safe-b));}
+.sh-handle{width:34px;height:4px;background:var(--border2);border-radius:999px;margin:0 auto 16px;}
+.sh-title{font-family:var(--fh);font-size:21px;color:var(--gold);margin-bottom:5px;text-align:center;}
+.sh-sub{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:16px;text-align:center;}
+.agree-box{background:rgba(245,239,224,.04);border:1px solid var(--border);border-radius:var(--rs);padding:13px;margin-bottom:14px;font-size:12px;color:var(--muted2);line-height:1.8;}
+.agree-box strong{color:var(--gold);}
+.qi{display:flex;align-items:flex-start;gap:13px;padding:14px 15px;background:rgba(245,239,224,.04);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:7px;}
+.qn{font-family:var(--fh);font-size:23px;font-weight:700;color:var(--gold);min-width:32px;line-height:1;}
+.qc{background:rgba(245,239,224,.03);border:1px solid var(--border);border-radius:var(--rs);padding:13px 15px;margin-bottom:7px;}
+.qt{font-size:13px;color:var(--cream);line-height:1.6;margin-bottom:7px;}
+.qm{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.upv{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;}
+.upv:hover,.upv.on{border-color:var(--gold);color:var(--gold);background:rgba(201,169,76,.1);}
+.ltog{display:flex;align-items:center;justify-content:space-between;padding:15px 17px;background:linear-gradient(135deg,rgba(201,169,76,.06),rgba(14,22,40,.9));border:1px solid var(--border);border-radius:var(--r);margin-bottom:13px;}
+.tsw{position:relative;width:50px;height:27px;cursor:pointer;}
+.tsw input{opacity:0;width:0;height:0;}
+.ttr{position:absolute;inset:0;background:rgba(245,239,224,.1);border-radius:999px;transition:all .3s;border:1px solid var(--border);}
+.ttr::before{content:'';position:absolute;width:21px;height:21px;left:2px;top:2px;background:var(--muted);border-radius:50%;transition:all .3s;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.tsw input:checked+.ttr{background:rgba(201,169,76,.2);border-color:var(--gold);}
+.tsw input:checked+.ttr::before{transform:translateX(23px);background:var(--gold);}
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:13px;}
+.sbox{background:rgba(245,239,224,.04);border:1px solid var(--border);border-radius:var(--r);padding:15px;text-align:center;}
+.snum{font-family:var(--fh);font-size:26px;color:var(--gold);font-weight:700;line-height:1;}
+.slab{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;}
+.pbar{background:rgba(245,239,224,.06);border-radius:999px;height:6px;overflow:hidden;margin-bottom:13px;}
+.pfill{background:linear-gradient(90deg,var(--gold),var(--gold2));height:100%;border-radius:999px;transition:width .5s;}
+.hnav{display:flex;gap:7px;overflow-x:auto;padding:0 0 8px;margin-bottom:15px;scrollbar-width:none;}
+.hnav::-webkit-scrollbar{display:none;}
+.hnb{flex-shrink:0;padding:7px 13px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.hnb.on{background:rgba(201,169,76,.15);border-color:var(--gold);color:var(--gold);}
+.lbox{border-radius:var(--r);padding:26px 18px;text-align:center;margin-bottom:11px;background:rgba(245,239,224,.03);border:1px solid var(--border);}
+.lic{width:52px;height:52px;border-radius:50%;background:rgba(201,169,76,.1);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;margin:0 auto 11px;font-size:22px;}
+.lttl{font-family:var(--fh);font-size:15px;color:var(--cream);margin-bottom:5px;}
+.lsub{font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:14px;}
+.tc{border-radius:var(--r);padding:15px;margin-bottom:11px;border:1px solid;}
+.tc.s{background:rgba(90,154,90,.07);border-color:rgba(90,154,90,.25);}
+.tc.gr{background:rgba(91,164,207,.07);border-color:rgba(91,164,207,.25);}
+.tc.bl{background:rgba(46,204,138,.07);border-color:rgba(46,204,138,.25);}
+.tc.bm{background:rgba(229,144,58,.07);border-color:rgba(229,144,58,.25);}
+.tc.e{background:rgba(155,112,207,.07);border-color:rgba(155,112,207,.25);}
+.tc.biz{background:rgba(229,144,58,.07);border-color:rgba(229,144,58,.25);}
+.tc.sub{background:rgba(46,204,138,.07);border-color:rgba(46,204,138,.25);}
+.tb-biz{color:#E5903A;border:1px solid rgba(229,144,58,.3);background:rgba(229,144,58,.08);}
+.tb-sub{color:#2ECC8A;border:1px solid rgba(46,204,138,.3);background:rgba(46,204,138,.08);}
+.tc-n{font-family:var(--fh);font-size:16px;font-weight:700;}
+.tc-r{font-size:10px;color:var(--muted);margin-bottom:7px;font-style:italic;}
+.tc-rw{display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-top:1px solid rgba(245,239,224,.06);}
+.tc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.tc-txt{font-size:12px;color:var(--cream);line-height:1.5;}
+.ck{display:flex;align-items:flex-start;gap:11px;padding:13px 15px;background:rgba(245,239,224,.04);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:7px;cursor:pointer;transition:all .2s;}
+.ck.done{background:rgba(46,204,138,.06);border-color:rgba(46,204,138,.25);}
+.ck-circ{width:23px;height:23px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s;margin-top:1px;}
+.ck.done .ck-circ{background:var(--green);border-color:var(--green);color:#fff;}
+.ck-lbl{font-size:13px;font-weight:600;color:var(--cream);margin-bottom:2px;}
+.ck-sub{font-size:11px;color:var(--muted);line-height:1.5;}
+.ck.done .ck-lbl{color:var(--muted);text-decoration:line-through;}
+.slot{background:rgba(245,239,224,.04);border:1px solid var(--border);border-radius:var(--rs);padding:13px 15px;margin-bottom:7px;display:flex;align-items:center;gap:11px;}
+.slot-open{border-style:dashed;cursor:pointer;}
+.slot-open:hover{border-color:var(--gold);background:rgba(201,169,76,.05);}
+.slot-day{font-weight:700;font-size:12px;min-width:76px;color:var(--gold);}
+.cc{background:rgba(14,22,40,.8);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:9px;}
+.cc-title{font-family:var(--fh);font-size:15px;font-weight:700;color:var(--cream);margin-bottom:4px;}
+.cc-enrolled{font-size:11px;color:var(--green);font-weight:700;padding:6px 11px;border-radius:var(--rs);background:rgba(46,204,138,.1);border:1px solid rgba(46,204,138,.2);display:inline-block;}
+.bc{background:rgba(14,22,40,.8);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:9px;position:relative;overflow:hidden;}
+.bc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--orange),var(--gold));}
+.bc-title{font-family:var(--fh);font-size:15px;font-weight:700;color:var(--cream);margin-bottom:3px;}
+.bc-vs{font-size:11px;color:var(--orange);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;}
+.cin-q{background:rgba(245,239,224,.04);border:1px solid var(--border);border-radius:var(--rs);padding:13px 15px;margin-bottom:9px;}
+.cin-q label{font-size:12px;font-weight:600;color:var(--gold);display:block;margin-bottom:7px;}
+.cin-q textarea{height:60px;margin-bottom:0;}
+.stars{display:flex;gap:7px;}
+.star{font-size:23px;cursor:pointer;opacity:.3;transition:all .2s;border:none;background:none;padding:3px;}
+.star.on{opacity:1;}
+.sc-card{background:rgba(14,22,40,.8);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:9px;}
+.sc-title{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--gold);margin-bottom:7px;}
+.sc-body{font-size:12px;color:var(--cream);line-height:1.95;white-space:pre-wrap;}
+.sc-note{font-size:11px;color:var(--muted);margin-top:7px;font-style:italic;border-top:1px solid var(--border);padding-top:7px;}
+.dc{background:rgba(14,22,40,.8);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:11px;}
+.dc-brand{font-family:var(--fh);font-size:17px;font-weight:700;color:var(--cream);margin-bottom:5px;}
+.dc-applied{font-size:11px;color:var(--green);font-weight:700;padding:6px 12px;border-radius:var(--rs);background:rgba(46,204,138,.1);border:1px solid rgba(46,204,138,.2);display:inline-block;}
+.inv-box{background:rgba(201,169,76,.08);border:1px solid var(--border2);border-radius:var(--rs);padding:13px 15px;display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;font-size:14px;color:var(--gold);font-weight:700;letter-spacing:.1em;}
+.cpbtn{font-size:10px;color:var(--muted);cursor:pointer;padding:5px 9px;border-radius:var(--rs);border:1px solid var(--border);background:transparent;transition:all .2s;text-transform:uppercase;}
+.cpbtn:hover{color:var(--gold);}
+.tbns{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;}
+.tbn{padding:4px 9px;border-radius:999px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;text-transform:uppercase;}
+.tbn.on{color:var(--gold);border-color:var(--border2);background:rgba(201,169,76,.12);}
+.epick{font-size:21px;cursor:pointer;padding:5px;border-radius:var(--rs);border:2px solid transparent;transition:all .2s;}
+.epick:hover{background:rgba(245,239,224,.06);}
+.epick.on{border-color:var(--gold);background:rgba(201,169,76,.1);}
+.aw{max-width:310px;margin:0 auto;text-align:center;padding:22px 14px;}
+.alogo{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin-bottom:16px;box-shadow:0 0 32px rgba(201,169,76,.35);}
+.atitle{font-family:var(--fh);font-size:24px;color:var(--gold);margin-bottom:7px;}
+.asub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.65;}
+.aerr{font-size:12px;color:var(--red);margin-top:7px;min-height:17px;}
+.ab-sec{margin-bottom:18px;}
+.ab-sec h3{font-family:var(--fh);font-size:19px;color:var(--gold);margin-bottom:9px;font-style:italic;}
+.ab-sec p{font-size:13px;color:var(--muted2);line-height:1.8;}
+.ab-sec ul{list-style:none;padding:0;}
+.ab-sec ul li{font-size:13px;color:var(--muted2);line-height:1.8;padding-left:15px;position:relative;}
+.ab-sec ul li::before{content:'✦';position:absolute;left:0;color:var(--gold);font-size:9px;}
+.join-c{background:linear-gradient(135deg,rgba(201,169,76,.12),rgba(14,22,40,.95));border:1px solid var(--border2);border-radius:var(--rx);padding:22px;text-align:center;margin-bottom:18px;}
+.join-c h3{font-family:var(--fh);font-size:21px;color:var(--gold);margin-bottom:9px;}
+.join-c p{font-size:13px;color:var(--muted2);line-height:1.7;margin-bottom:16px;}
+.nbanner{background:linear-gradient(135deg,rgba(201,169,76,.1),rgba(14,22,40,.9));border:1px solid var(--border2);border-radius:var(--r);padding:13px 15px;margin-bottom:14px;display:flex;align-items:center;gap:11px;}
+.nbanner .ni{font-size:26px;flex-shrink:0;}
+.nbanner .nt{font-family:var(--fh);font-size:14px;color:var(--gold);margin-bottom:2px;}
+.nbanner .ns{font-size:11px;color:var(--muted);line-height:1.5;}
+.nn{display:flex;align-items:center;gap:9px;padding:9px 13px;background:rgba(201,169,76,.07);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:13px;}
+.nn span{font-size:12px;color:var(--muted);}
+.nn strong{color:var(--gold);}
+.empty{text-align:center;padding:28px 13px;color:var(--muted);font-size:13px;}
+.empty-ic{font-size:28px;margin-bottom:9px;opacity:.5;}
+.toast{position:fixed;bottom:calc(68px + var(--safe-b) + 9px);left:50%;transform:translateX(-50%) translateY(80px);background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink);padding:10px 20px;border-radius:999px;font-size:13px;font-weight:700;z-index:300;transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none;box-shadow:0 4px 22px rgba(201,169,76,.35);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.err{background:linear-gradient(135deg,#E85454,#C03434);color:#fff;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+<script>
+const _mblob = new Blob([JSON.stringify({
+  "name": "Bloom & Co Creator Hub",
+  "short_name": "Bloom & Co",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080C18",
+  "theme_color": "#080C18",
+  "orientation": "portrait",
+  "icons": []
+})], {type:'application/json'});
+const _murl = URL.createObjectURL(_mblob);
+const _mlink = document.createElement('link');
+_mlink.rel='manifest';_mlink.href=_murl;
+document.head.appendChild(_mlink);
+</script>
+</head>
+<body>
+<div class="bg"></div>
+<div class="scroll">
+  <div class="screen active" id="s-audience"></div>
+  <div class="screen" id="s-liveq"></div>
+  <div class="screen" id="s-hub"></div>
+  <div class="screen" id="s-stats"></div>
+  <div class="screen" id="s-deals"></div>
+  <div class="screen" id="s-about"></div>
+  <div class="screen" id="s-mod"></div>
+</div>
+<header class="hdr">
+  <div class="hdr-brand">
+    <img id="hlogo" src="data:image/jpeg;base64,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" class="hdr-logo" alt="Bloom and Co"/>
+    <div><div class="hdr-name">Bloom &amp; Co</div><div class="hdr-sub">Creator Network</div></div>
+  </div>
+  <div class="live-pill"><span class="ldot"></span><span id="lct">0 Live</span></div>
+</header>
+<nav class="tabs">
+  <button class="tab on" onclick="go('audience')" id="t-audience"><span class="tab-ic">🌸</span><span>Home</span></button>
+  <button class="tab" onclick="go('liveq')" id="t-liveq"><span class="tab-ic">🎤</span><span>Live Q&amp;A</span></button>
+  <button class="tab" onclick="go('hub')" id="t-hub"><span class="tab-ic">🎬</span><span>Hub</span></button>
+  <button class="tab" onclick="go('stats')" id="t-stats"><span class="tab-ic">📊</span><span>My Stats</span></button>
+  <button class="tab" onclick="go('deals')" id="t-deals"><span class="tab-ic">💼</span><span>Deals</span></button>
+  <button class="tab" onclick="go('about')" id="t-about"><span class="tab-ic">🌿</span><span>About</span></button>
+</nav>
+<div class="toast" id="toast"></div>
+<div class="vmod" id="vmod">
+  <div class="vmod-bar"><div class="vmod-ttl" id="vmod-ttl"></div><button class="vmod-x" onclick="closeVid()">✕</button></div>
+  <div class="vemb"><iframe id="vifr" allowfullscreen allow="autoplay;encrypted-media;picture-in-picture" frameborder="0"></iframe></div>
+</div>
+<div id="modal-root"></div>
+<script>
+'use strict';
+const LINKS={tk:'https://www.tiktok.com/@bloomco23',dc:'https://discord.gg/TGbtH7Tjg',web:'https://bloomconetwork.com'};
+const TIPS=["Start every live with your pet, product, or activity on camera before you say a word.","Say your live schedule out loud twice per live — make it stick.","Acknowledge every gift by name within 10 seconds. Never let one go unrecognised.","Use the promise loop — tease something every 10 minutes to keep viewers watching.","Post a teaser video within 2 hours before going live to drive viewers in.","Read chat usernames out loud and respond personally — it builds loyalty fast.","Check your TikTok Campaigns tab before every live — there is money in those missions.","Your gifting prompt needs a specific reward — not just send love.","End every live with one specific reason to come back next time.","Have your TikTok Shop products pinned before you go live — not after.","The first 60 seconds decide if TikTok pushes your live or buries it.","Consistency beats perfection. One live per week beats three lives then none.","Your regulars drive your gifting. Learn their names. They will show up for you.","Never mention your viewer count on stream — it makes people feel like an empty room.","A strong close is as important as a strong open. Always end with purpose."];
+const TIERS={seedling:{lbl:'🌱 Seedling',color:'#5A9A5A',req:'0–2,499 diamonds · 2+ hrs/week',cls:'s',key:'seedling'},grower:{lbl:'🌿 Grower',color:'#5BA4CF',req:'2,500–4,999 diamonds · 3+ hrs/week',cls:'gr',key:'grower'},bloomer:{lbl:'🌸 Bloomer',color:'#2ECC8A',req:'5,000–9,999 diamonds · 4+ hrs/week',cls:'bl',key:'bloomer'},bloom:{lbl:'🌺 Bloom',color:'#E5903A',req:'10,000–19,999 diamonds · 5+ hrs/week',cls:'bm',key:'bloom'},elite:{lbl:'👑 Elite',color:'#9B70CF',req:'20,000+ diamonds · 6+ hrs/week',cls:'e',key:'elite'},business:{lbl:'💼 Business Builder',color:'#E5903A',req:'Business & entrepreneur creators',cls:'biz',key:'business'},subagency:{lbl:'🤝 Sub-Agency Partner',color:'#2ECC8A',req:'Partner program — manage creators',cls:'sub',key:'subagency'}};
+const TO=['seedling','grower','bloomer','bloom','elite','business','subagency'];
+const TIER_REWARDS={seedling:['Hub access — your content library unlocked','Agency tip of the week — one personalised live strategy tip sent to you','Schedule posted in the Hub — agency team can see and support your stream times'],grower:['Everything in Seedling','Personalised strategy sheet — one-page plan tailored to your niche and recent streams','Priority placement in Hub schedule — your slot pinned at the top for the week'],bloomer:['Everything in Grower','Upgraded Hub access — agency moves your tier up, more content unlocked','Weekly performance recap — written breakdown of what worked and what to improve','Creator spotlight — your name featured in the Home tab announcement'],bloom:['Everything in Bloomer','$25 weekly performance bonus — paid within 7 days','Full stream audit — agency watches one stream and sends detailed written notes','First access to all new agency resources added that week'],elite:['Everything in Bloom','$50 weekly performance bonus — replaces the $25 Bloom bonus','Elite creator title in the Hub visible to the full agency team','Agency-written 7-day content plan — what to post, when to live, what to focus on','Creator of the Week — named across all internal channels if you top the leaderboard'],business:['Access to Business Builder training library','Brand strategy and monetisation resources','Content planning for entrepreneurs and brand accounts','Business-specific live coaching and tools'],subagency:['Full Sub-Agency Partner training library','Creator management guides and templates','Access to scouting scripts and onboarding resources','Partner-level support from the Bloom & Co team']};
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+let creators={},questions={},deals={},announcements={},hubVideos={},schedules={},campaigns={},battles={},checkins={};
+let currentCreator=null,modLoggedIn=false,dealsUnlocked=false,scoutUnlocked=false;
+let selAudId=null,selEmoji='🌸';
+let appliedDeals=JSON.parse(localStorage.getItem('bc_applied')||'[]');
+let enrolledCmp=JSON.parse(localStorage.getItem('bc_cmp')||'[]');
+let enrolledBat=JSON.parse(localStorage.getItem('bc_bat')||'[]');
+let unlockedTiers=JSON.parse(sessionStorage.getItem('bc_tiers')||'{}');
+let onboardDone=JSON.parse(localStorage.getItem('bc_ob')||'{}');
+let cinRatings={};
+let _lastQ=0,_qCount=0,_upvLog={},_addingVid=false;
+let hubSec='videos';
+function whenReady(fn){if(window._firebaseReady)fn();else window.addEventListener('firebaseReady',fn,{once:true});}
+const DB=()=>window._db,FS=()=>window._fs;
+const col=(p)=>FS().collection(DB(),p);
+const ref=(p,id)=>FS().doc(DB(),p,id);
+const san=(s)=>String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').substring(0,600);
+const niche=(n)=>n==='pets'?'🐾 Pets':n==='beauty'?'✨ Beauty':'🌿 Lifestyle';
+const nicheName=(n)=>n==='pets'?'Pets':n==='beauty'?'Beauty':'Lifestyle';
+const tr=(t)=>TIERS[t]||TIERS.seedling;
+const tBadge=(t)=>{const i=tr(t);return`<span class="tb tb-${i.cls}">${i.lbl}</span>`;};
+const LOGO_SRC='data:image/jpeg;base64,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';const logo=()=>LOGO_SRC;
+function toast(m,err=false){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(err?' err':'');t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3200);}
+function copy(txt){navigator.clipboard.writeText(txt).then(()=>toast('Copied!'));}
+function ytId(url){if(!url)return null;try{if(url.includes('youtu.be/'))return url.split('youtu.be/')[1].split(/[?&]/)[0].substring(0,11);if(url.includes('youtube.com/watch'))return new URL(url).searchParams.get('v');if(url.includes('youtube.com/embed/'))return url.split('youtube.com/embed/')[1].split(/[?&]/)[0].substring(0,11);}catch(e){}return null;}
+function playVid(id,title,fb){if(id){document.getElementById('vmod-ttl').textContent=title;document.getElementById('vifr').src=`https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;document.getElementById('vmod').classList.add('open');document.querySelector('.scroll').style.overflow='hidden';document.body.style.overflow='hidden';}else window.open(fb||'#','_blank');}
+function closeVid(){document.getElementById('vmod').classList.remove('open');document.getElementById('vifr').src='';document.querySelector('.scroll').style.overflow='';document.body.style.overflow='';}
+function showModal(html){document.getElementById('modal-root').innerHTML=`<div class="ovl">${html}</div>`;document.body.style.overflow='hidden';}
+function closeModal(){document.getElementById('modal-root').innerHTML='';document.body.style.overflow='';}
+function go(tab){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));const tb=document.getElementById('t-'+tab);if(tb)tb.classList.add('on');document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const sc=document.getElementById('s-'+tab);if(sc)sc.classList.add('active');({audience:renderAudience,liveq:renderLiveQ,hub:renderHub,stats:renderStats,deals:renderDeals,about:renderAbout,mod:renderMod})[tab]?.();}
+function genCode(n){const w={pets:['LUNA','PAWS','BOOP','FUZZ','WOOF'],beauty:['GLOW','MUSE','LUXE','ROSE','GLAM'],lifestyle:['VIBE','FLOW','BLOOM','CHILL','AURA']};const a=w[n]||w.pets;return`${a[Math.floor(Math.random()*a.length)]}-${n.toUpperCase().slice(0,3)}-${Math.floor(1000+Math.random()*9000)}`;}
+function renderAudience(){
+  const s=document.getElementById('s-audience');
+  const tip=TIPS[Math.floor(Date.now()/86400000)%TIPS.length];
+  const liveNow=Object.values(creators).filter(c=>c.live&&!c.deleted);
+  const anns=Object.values(announcements).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,3);
+  s.innerHTML=`<div class="hero"><div class="ring-wrap"><img src="${logo()}" class="hero-img" alt="Bloom and Co" onerror="this.style.display='none'"/><div class="r1"></div><div class="r2"></div></div><div class="htitle">Bloom &amp; Co</div><div class="hsub">Not every creator is meant to stay small — some are meant to bloom.</div></div>
+  <div class="wrap" style="padding-top:14px;">
+    <div class="hgrid">
+      <a href="${LINKS.tk}" target="_blank" class="hcard"><div class="hcard-ic">📱</div><div class="hcard-lbl">TikTok</div><div class="hcard-sub">@bloomco23</div></a>
+      <a href="${LINKS.dc}" target="_blank" class="hcard"><div class="hcard-ic">💬</div><div class="hcard-lbl">Discord</div><div class="hcard-sub">Agency community</div></a>
+      <a href="${LINKS.web}" target="_blank" class="hcard"><div class="hcard-ic">🌐</div><div class="hcard-lbl">Website</div><div class="hcard-sub">bloomconetwork.com</div></a>
+      <div class="hcard" onclick="go('liveq')"><div class="hcard-ic">🎤</div><div class="hcard-lbl">Ask Live</div><div class="hcard-sub">Send a question</div></div>
+    </div>
+    <div class="tip"><div class="tip-lbl">✨ Creator Tip of the Day</div><div class="tip-txt">"${tip}"</div></div>
+    <div class="sec-hd"><span class="sec-lbl">📢 Announcements</span></div>
+    ${anns.length?anns.map(a=>`<div class="ann"><div class="ann-lbl">From the Agency</div><div style="font-size:14px;line-height:1.7;">${san(a.text)}</div><div style="font-size:11px;color:var(--muted);margin-top:5px;">${a.createdAt?new Date(a.createdAt.seconds*1000).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Recently'}</div></div>`).join(''):`<div class="ann"><div class="ann-lbl">From the Agency</div><div style="font-size:14px;line-height:1.7;">Welcome to the Bloom &amp; Co Creator Hub. Your resources, live tools, stats, and brand deals are all here. Let's get to work.</div></div>`}
+    ${liveNow.length?`<div class="div"></div><div class="sec-hd"><span class="sec-lbl">🔴 Live Right Now</span><span class="cnt">${liveNow.length}</span></div>${liveNow.map(c=>`<div class="crow" onclick="go('liveq');setTimeout(()=>{selAudId='${c.id}';renderLiveQ();},120)"><div class="cav">${c.emoji||'🎬'}</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;">${san(c.name)}</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">${niche(c.niche)}</div></div><span class="badge blive">Live</span></div>`).join('')}`:''}
+    <div class="div"></div>
+    <div style="text-align:center;padding:8px 0 4px;"><p style="font-size:12px;color:var(--muted);">Are you a Bloom &amp; Co creator?</p><button class="btn btn-gh" onclick="go('hub')" style="margin-top:9px;font-size:11px;max-width:180px;margin-left:auto;margin-right:auto;">Creator Login →</button></div>
+  </div>`;}
+function renderLiveQ(){
+  const s=document.getElementById('s-liveq');
+  if(currentCreator){renderCreatorLQ(s);return;}
+  const sorted=[...Object.values(creators).filter(c=>!c.deleted)].sort((a,b)=>(b.live?1:0)-(a.live?1:0));
+  const myQs=selAudId?Object.values(questions).filter(q=>q.creatorId===selAudId&&q.status!=='rejected').sort((a,b)=>(b.votes||0)-(a.votes||0)):[];
+  s.innerHTML=`<div class="wrap"><div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Who's Streaming?</p>${sorted.length?sorted.map(c=>`<div class="crow ${selAudId===c.id?'sel':''}" onclick="selAudId='${c.id}';renderLiveQ()"><div class="cav">${c.emoji||'🎬'}</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;">${san(c.name)}</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">${niche(c.niche)}</div></div>${c.live?'<span class="badge blive">Live</span>':'<span class="badge boff">Offline</span>'}</div>`).join(''):'<div class="empty"><div class="empty-ic">🎬</div>No creators yet</div>'}</div>
+  ${selAudId?`<div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Ask a Question</p><input type="text" id="fn" placeholder="@yourusername" maxlength="40" autocapitalize="none" autocorrect="off"/><textarea id="fq" placeholder="Type your question here..." maxlength="300"></textarea><button class="btn btn-g" onclick="submitQ()">Send Question ✦</button></div><div class="sec-hd"><span class="sec-lbl">Top Questions</span><span class="cnt">${myQs.length}</span></div>${myQs.length?myQs.map(q=>`<div class="qc"><div class="qt">${san(q.text)}</div><div class="qm"><span>${san(q.name||'@anonymous')}</span><button class="upv ${q.myVote?'on':''}" onclick="upvote('${q.id}')">▲ ${q.votes||0}</button></div></div>`).join(''):'<div class="empty">No questions yet — be the first!</div>'}`:''}
+  <div class="div"></div><div class="card" style="text-align:center;"><p style="font-size:12px;color:var(--muted);margin-bottom:11px;">Creator login</p><button class="btn btn-gh" onclick="showCreatorLogin()" style="font-size:11px;max-width:180px;margin:auto;">Creator Access →</button></div></div>`;}
+function renderCreatorLQ(s){
+  const approved=Object.values(questions).filter(q=>q.creatorId===currentCreator.id&&q.status==='approved');
+  s.innerHTML=`<div class="wrap"><div class="ltog"><div><div style="font-family:var(--fh);font-size:17px;color:var(--gold);">${san(currentCreator.name)}</div><div style="font-size:12px;color:var(--muted);margin-top:2px;" id="lqst">${currentCreator.live?'🔴 You are LIVE':'⚫ Offline'}</div></div><label class="tsw"><input type="checkbox" id="ltog" ${currentCreator.live?'checked':''} onchange="toggleLive()"/><span class="ttr"></span></label></div>
+  <div class="sec-hd"><span class="sec-lbl">Approved Questions</span><span class="cnt">${approved.length}</span></div><p style="font-size:12px;color:var(--muted);margin-bottom:13px;">Read these on your live stream</p>
+  ${approved.length?approved.map((q,i)=>`<div class="qi"><div class="qn">${String(i+1).padStart(2,'0')}</div><div><div style="font-size:13px;color:var(--cream);line-height:1.6;margin-bottom:3px;">${san(q.text)}</div><div style="font-size:11px;color:var(--muted);">from ${san(q.name||'@anonymous')}</div></div></div>`).join(''):'<div class="empty"><div class="empty-ic">⏳</div>No approved questions yet</div>'}
+  <div style="margin-top:18px;"><button class="btn btn-gh" onclick="creatorLogout()" style="font-size:11px;">Switch Account</button></div></div>`;}
+async function submitQ(){
+  const now=Date.now();if(now-_lastQ<10000){toast('Please wait before sending another question',true);return;}if(_qCount>=5){toast('Question limit reached for this session',true);return;}
+  const name=document.getElementById('fn')?.value.trim()||'@anonymous';const text=document.getElementById('fq')?.value.trim();
+  if(!text){toast('Type your question first',true);return;}if(!selAudId){toast('Select a creator first',true);return;}
+  _lastQ=now;_qCount++;
+  try{await FS().addDoc(col('questions'),{creatorId:selAudId,name:san(name),text:san(text),status:'pending',votes:0,createdAt:FS().serverTimestamp()});const el=document.getElementById('fq');if(el)el.value='';toast('Question sent! ✓');renderLiveQ();}catch(e){toast('Connection error',true);}
+}
+async function upvote(id){const now=Date.now();if(_upvLog[id]&&now-_upvLog[id]<3000)return;_upvLog[id]=now;const q=questions[id];if(!q)return;const nv=!q.myVote;q.myVote=nv;renderLiveQ();try{await FS().updateDoc(ref('questions',id),{votes:(q.votes||0)+(nv?1:-1)});}catch(e){q.myVote=!nv;renderLiveQ();}}
+async function toggleLive(){const isLive=document.getElementById('ltog')?.checked;if(!currentCreator)return;try{await FS().updateDoc(ref('creators',currentCreator.id),{live:isLive});currentCreator.live=isLive;const el=document.getElementById('lqst');if(el)el.textContent=isLive?'🔴 You are LIVE':'⚫ Offline';toast(isLive?"You're live! 🔴":"Gone offline.");renderAudience();}catch(e){toast('Error',true);}}
+function showCreatorLogin(){document.getElementById('s-liveq').innerHTML=`<div class="wrap"><div class="aw"><img src="${logo()}" class="alogo" onerror="this.style.display='none'"/><p class="atitle">Creator Login</p><p class="asub">Enter the invite code your agency gave you</p><input type="text" id="cc" placeholder="e.g. LUNA-PET-7742" style="text-transform:uppercase;letter-spacing:.06em;text-align:center;" maxlength="20" autocapitalize="characters" autocorrect="off" onkeydown="if(event.key==='Enter')creatorLogin()"/><button class="btn btn-g" onclick="creatorLogin()">Continue</button><p class="aerr" id="cerr"></p><button class="btn btn-gh" onclick="renderLiveQ()" style="margin-top:11px;font-size:11px;">Back</button></div></div>`;}
+async function creatorLogin(){const code=document.getElementById('cc')?.value.trim().toUpperCase();if(!code){document.getElementById('cerr').textContent='Enter your code';return;}document.getElementById('cerr').textContent='Checking…';try{const inv=await FS().getDoc(ref('invites',code));if(inv.exists()&&!inv.data().used){showSetupForm(inv.data().niche,code);return;}const snap=await FS().getDocs(FS().query(col('creators'),FS().where('code','==',code)));if(!snap.empty){const d=snap.docs[0];currentCreator={id:d.id,...d.data()};localStorage.setItem('bc_cc',code);renderLiveQ();subCQ();return;}document.getElementById('cerr').textContent='Code not found. Contact your agency.';}catch(e){document.getElementById('cerr').textContent='Connection error.';}}
+function showSetupForm(dn,code){document.getElementById('s-liveq').innerHTML=`<div class="wrap"><div class="card" style="margin-top:18px;"><p class="sec-lbl" style="margin-bottom:13px;">Complete Your Profile</p><input type="text" id="sn" placeholder="Your creator name" maxlength="40"/><select id="sniche"><option value="">Select your niche…</option><option value="pets" ${dn==='pets'?'selected':''}>🐾 Pets</option><option value="beauty" ${dn==='beauty'?'selected':''}>✨ Beauty</option><option value="lifestyle" ${dn==='lifestyle'?'selected':''}>🌿 Lifestyle</option></select><div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px;">${['🌸','🐶','🐱','🐰','✨','💄','💅','🌿','☕','🎀','🦋','🌺'].map(e=>`<span class="epick" onclick="pickE(this)">${e}</span>`).join('')}</div><button class="btn btn-g" onclick="completeSetup('${code}')">Save &amp; Enter Hub</button><p class="aerr" id="serr"></p></div></div>`;}
+function pickE(el){document.querySelectorAll('.epick').forEach(e=>e.classList.remove('on'));el.classList.add('on');selEmoji=el.textContent;}
+async function completeSetup(code){const name=document.getElementById('sn')?.value.trim();const n=document.getElementById('sniche')?.value;if(!name){document.getElementById('serr').textContent='Enter your name';return;}if(!n){document.getElementById('serr').textContent='Select your niche';return;}try{await FS().updateDoc(ref('invites',code),{used:true});const cr=await FS().addDoc(col('creators'),{name:san(name),niche:n,emoji:selEmoji,code,live:false,diamonds:0,hours:0,tier:'seedling',createdAt:FS().serverTimestamp()});currentCreator={id:cr.id,name,niche:n,emoji:selEmoji,code,live:false,diamonds:0,hours:0,tier:'seedling'};localStorage.setItem('bc_cc',code);renderLiveQ();subCQ();toast('Welcome to Bloom & Co! 🌸');}catch(e){document.getElementById('serr').textContent='Error. Try again.';}}
+function creatorLogout(){localStorage.removeItem('bc_cc');sessionStorage.removeItem('bc_tiers');currentCreator=null;unlockedTiers={};selAudId=null;renderLiveQ();}
+function subCQ(){if(!currentCreator)return;const q=FS().query(col('questions'),FS().where('creatorId','==',currentCreator.id),FS().where('status','==','approved'));FS().onSnapshot(q,snap=>{snap.docs.forEach(d=>questions[d.id]={id:d.id,...d.data()});if(document.getElementById('s-liveq').classList.contains('active'))renderLiveQ();});}
+function renderHub(){
+  const s=document.getElementById('s-hub');
+  if(!currentCreator){s.innerHTML=`<div class="wrap"><div class="aw"><img src="${logo()}" class="alogo" onerror="this.style.display='none'"/><p class="atitle">Creator Hub</p><p class="asub">Log in with your creator code</p><input type="text" id="hc" placeholder="Your creator code" style="text-transform:uppercase;letter-spacing:.06em;text-align:center;" maxlength="20" autocapitalize="characters" autocorrect="off" onkeydown="if(event.key==='Enter')hubLogin()"/><button class="btn btn-g" onclick="hubLogin()">Access Hub</button><p class="aerr" id="herr"></p></div></div>`;return;}
+  const myTier=currentCreator.tier||'seedling';const myNiche=currentCreator.niche;
+  const secs=['videos','schedule','campaigns','battles','onboarding','checkin','incentive'];
+  const sLbls={videos:'📹 Content Library',schedule:'📅 Live Schedule',campaigns:'🚀 Campaigns',battles:'⚔️ Battles',onboarding:'✅ Onboarding',checkin:'📋 Check-In',incentive:'🏆 Incentive Plan'};
+  s.innerHTML=`<div class="wrap"><div class="card-gold" style="display:flex;align-items:center;gap:13px;margin-bottom:14px;"><div class="cav" style="width:50px;height:50px;font-size:23px;">${currentCreator.emoji||'🎬'}</div><div style="flex:1;"><div style="font-family:var(--fh);font-size:17px;color:var(--gold);">${san(currentCreator.name)}</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">${niche(myNiche)}</div></div>${tBadge(myTier)}</div>
+  <div class="hnav">${secs.map(sec=>`<button class="hnb ${hubSec===sec?'on':''}" onclick="hubSec='${sec}';renderHub()">${sLbls[sec]}</button>`).join('')}</div>
+  <div id="hub-body"></div>
+  <div style="margin-top:22px;"><button class="btn btn-gh" onclick="creatorLogout();renderHub()" style="font-size:11px;">Log Out</button></div></div>`;
+  const body=document.getElementById('hub-body');
+  if(hubSec==='videos')renderHubVideos(body,myNiche,myTier);
+  else if(hubSec==='schedule')renderHubSchedule(body);
+  else if(hubSec==='campaigns')renderHubCampaigns(body);
+  else if(hubSec==='battles')renderHubBattles(body);
+  else if(hubSec==='onboarding')renderHubOnboarding(body);
+  else if(hubSec==='checkin')renderHubCheckin(body);
+  else if(hubSec==='incentive')renderHubIncentive(body,myTier);
+}
+function renderHubVideos(body,myNiche,myTier){
+  const allVids=Object.values(hubVideos).filter(v=>!v.deleted);
+  // Show: creator's own niche + general (null/all). Never show other niches.
+  const getVids=(tier,nicheFilter)=>allVids.filter(v=>{
+    if(v.tier!==tier)return false;
+    if(nicheFilter==='all')return v.niche===null||v.niche==='all'||!v.niche;
+    return v.niche===nicheFilter;
+  }).sort((a,b)=>{const oa=parseInt(a.order)||999,ob=parseInt(b.order)||999;return oa!==ob?oa-ob:(a.createdAt?.seconds||0)-(b.createdAt?.seconds||0);});
+  const gCat=(vids)=>{const g={};vids.forEach(v=>{const c=v.category||'General';if(!g[c])g[c]=[];g[c].push(v);});return g;};
+  const vidCard=(v)=>{const id=ytId(v.url);const thumb=id?`https://img.youtube.com/vi/${id}/mqdefault.jpg`:'';return`<div class="vc" onclick="playVid('${id||''}','${san(v.title).replace(/'/g,"&#39;")}','${san(v.url)}')"><div class="vt"><div class="vti" style="${thumb?`background-image:url('${thumb}')`:''};background-color:rgba(245,239,224,.04);"><div class="pb">▶</div></div></div><div class="vi"><div class="vttl">${san(v.title)}</div><div class="vdsc">${san(v.description||'Tap to watch')}</div></div></div>`;};
+  const renderSec=(vids)=>{if(!vids.length)return'';const g=gCat(vids);return Object.entries(g).map(([cat,cvids])=>`<div class="vcat"><span>${san(cat)}</span></div><div class="nf-row">${cvids.map(vidCard).join('')}</div>`).join('');};
+  const lockBox=(tier)=>{const i=tr(tier);return`<div class="lbox"><div class="lic">🔒</div><div style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">${i.lbl}</div><div class="lttl">Section locked</div><div class="lsub">${i.req}<br/><br/>Enter your access code or contact your agency to upgrade.</div><input type="password" id="tu-${tier}" placeholder="Enter tier code" autocomplete="new-password" onkeydown="if(event.key==='Enter')unlockTier('${tier}')"/><button class="btn btn-g" onclick="unlockTier('${tier}')" style="font-size:12px;padding:11px;">Unlock</button><p class="aerr" id="tuerr-${tier}"></p></div>`;};
+  let html=`<div class="nn"><span>🔒</span><span>You need <strong>two codes</strong>: your tier code + your <strong>${nicheName(myNiche)} niche code</strong>. Each niche is completely separate.</span></div>`;
+  html+=`<div class="nbanner"><div class="ni">🏆</div><div><div class="nt">Live Incentive Plan — Season 1</div><div class="ns">Each tier below matches your weekly performance rewards.</div></div></div><div class="div"></div>`;
+  TO.forEach(tier=>{const i=tr(tier);
+    // Tier-level lock — enter tier code first
+    const tierUnlocked=unlockedTiers[tier]===true;
+    html+=`<div class="tc ${i.cls}"><div class="tc-n" style="color:${i.color};">${i.lbl}</div><div class="tc-r">${i.req}</div></div>`;
+    if(!tierUnlocked){
+      html+=lockBox(tier);
+    } else {
+      // ── GENERAL videos: visible to all inside this tier ──
+      const generalVids=getVids(tier,'all');
+      if(generalVids.length){
+        html+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;"><span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;">🌐 General — All Niches</span></div>`;
+        html+=renderSec(generalVids);
+      }
+      // ── NICHE section: ONLY this creator's niche, locked with its own code ──
+      const nicheKey='niche-'+myNiche;
+      const nicheUnlocked=unlockedTiers[nicheKey]===true;
+      // Only show niche section if there are niche videos for this tier
+      const myNicheVids=getVids(tier,myNiche);
+      // Always show the niche lock — even if empty, so creators know it exists
+      html+=`<div style="height:12px;"></div>`;
+      html+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;">
+        <span style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;">${nicheName(myNiche)} Creators Only</span>
+        ${nicheUnlocked?'<span style="font-size:9px;color:var(--green);font-weight:700;">✓ UNLOCKED</span>':'<span style="font-size:9px;color:var(--muted);">🔒 LOCKED</span>'}
+      </div>`;
+      if(nicheUnlocked){
+        if(myNicheVids.length){
+          html+=renderSec(myNicheVids);
+        } else {
+          html+=`<div class="lbox" style="background:rgba(245,239,224,.02);border:1px solid rgba(245,239,224,.08);padding:14px 18px;">
+            <div style="font-size:11px;color:var(--muted);text-align:center;">No ${nicheName(myNiche)} videos added to this tier yet.</div>
+          </div>`;
+        }
+      } else {
+        html+=`<div class="lbox">
+          <div class="lic">${myNiche==='pets'?'🐾':myNiche==='beauty'?'✨':'🌿'}</div>
+          <div style="font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">${nicheName(myNiche)} Creators Only</div>
+          <div class="lttl">Your Niche Is Locked</div>
+          <div class="lsub">This section contains ${nicheName(myNiche)}-specific training. Only ${nicheName(myNiche)} creators can access this content.<br/><br/>Enter your ${nicheName(myNiche)} niche code to unlock. Other niches cannot see this content.</div>
+          <input type="password" id="nl-${nicheKey}" placeholder="Enter your ${nicheName(myNiche)} code" autocomplete="new-password" onkeydown="if(event.key==='Enter')unlockNiche('${myNiche}')"/>
+          <button class="btn btn-g" onclick="unlockNiche('${myNiche}')" style="font-size:12px;padding:11px;">Unlock ${nicheName(myNiche)} Content</button>
+          <p class="aerr" id="nlerr-${nicheKey}"></p>
+        </div>`;
+      }
+    }
+    html+=`<div class="div"></div>`;});
+  body.innerHTML=html;
+}
+function unlockNiche(niche){
+  // Each niche has its OWN code — separate from tier codes
+  // Pets: BloomPets2024, Beauty: BloomBea2024, Lifestyle: BloomLif2024
+  const key='niche-'+niche;
+  const input=document.getElementById('nl-'+key);
+  const errEl=document.getElementById('nlerr-'+key);
+  if(!input)return;
+  const correctCode=window.__BCPW[niche];
+  if(input.value===correctCode){
+    unlockedTiers[key]=true;
+    sessionStorage.setItem('bc_tiers',JSON.stringify(unlockedTiers));
+    toast(`${niche.charAt(0).toUpperCase()+niche.slice(1)} content unlocked! ✓`);
+    renderHub();
+  } else {
+    if(errEl)errEl.textContent='Incorrect code. Contact your agency.';
+  }
+}
+function switchNicheTab(tier,tab){
+  ['niche','general'].forEach(t=>{
+    const btn=document.getElementById(`ntab-${tier}-${t}`);
+    const vids=document.getElementById(`nvids-${tier}-${t}`);
+    if(btn)btn.classList.toggle('on',t===tab);
+    if(vids)vids.style.display=t===tab?'':'none';
+  });
+}
+function unlockTier(tier){const input=document.getElementById(`tu-${tier}`);const errEl=document.getElementById(`tuerr-${tier}`);if(!input||!errEl)return;const codes={seedling:window.__BCPW.seedling,grower:window.__BCPW.grower,bloomer:window.__BCPW.bloomer,bloom:window.__BCPW.bloom,elite:window.__BCPW.elite};if(input.value===codes[tier]){unlockedTiers[tier]=true;sessionStorage.setItem('bc_tiers',JSON.stringify(unlockedTiers));toast(`${tr(tier).lbl} unlocked! ✓`);renderHub();}else{errEl.textContent='Incorrect code. Contact your agency.';}}
+async function hubLogin(){const code=document.getElementById('hc')?.value.trim().toUpperCase();if(!code){document.getElementById('herr').textContent='Enter your code';return;}document.getElementById('herr').textContent='Checking…';try{const snap=await FS().getDocs(FS().query(col('creators'),FS().where('code','==',code)));if(!snap.empty){const d=snap.docs[0];currentCreator={id:d.id,...d.data()};localStorage.setItem('bc_cc',code);subCQ();renderHub();return;}document.getElementById('herr').textContent='Code not found.';}catch(e){document.getElementById('herr').textContent='Connection error.';}}
+function renderHubSchedule(body){
+  const mySch=schedules[currentCreator?.id];const allSch=Object.values(schedules).sort((a,b)=>(a.dayOrder||0)-(b.dayOrder||0));
+  body.innerHTML=`<p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7;">Claim your weekly live slot. You will be asked to agree to the streaming commitment before your slot is confirmed.</p>
+  <div class="sec-hd"><span class="sec-lbl">My Schedule</span></div>
+  ${mySch?`<div class="card-gold" style="margin-bottom:13px;"><div style="font-family:var(--fh);font-size:16px;color:var(--gold);margin-bottom:3px;">${san(mySch.day)} · ${san(mySch.time)}</div>${mySch.topic?`<div style="font-size:12px;color:var(--muted);">${san(mySch.topic)}</div>`:''}<button class="btn-sm btn-no" onclick="showScheduleModal()" style="margin-top:10px;">Edit Slot</button></div>`:
+  `<div class="slot slot-open" onclick="showScheduleModal()"><div class="slot-day">+ Book Slot</div><div style="flex:1;"><div style="font-size:13px;color:var(--cream);">Tap to claim your weekly live slot</div></div></div>`}
+  <div class="sec-hd" style="margin-top:16px;"><span class="sec-lbl">All Creator Schedules</span><span class="cnt">${allSch.length}</span></div>
+  ${allSch.length?allSch.map(sc=>`<div class="slot"><div class="slot-day">${san(sc.day)}</div><div style="flex:1;"><div style="font-size:13px;color:var(--cream);">${san(sc.time)}</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">${san(sc.creatorName)} · ${niche(sc.niche)}${sc.topic?' · '+san(sc.topic):''}</div></div>${sc.live?'<span class="badge blive">Live</span>':''}</div>`).join(''):'<div class="empty">No schedules posted yet</div>'}`;
+}
+function showScheduleModal(){const mySch=schedules[currentCreator?.id];showModal(`<div class="sheet"><div class="sh-handle"></div><div class="sh-title">Live Schedule Commitment</div><div class="sh-sub">Read and agree before booking your slot.</div><div class="agree-box"><strong>By confirming your slot you agree to:</strong><br/><br/>• Go live on the day and time you select, every week, for the minimum hours required for your tier<br/><br/>• Give the agency at least <strong>24 hours' notice</strong> if you cannot stream that week<br/><br/>• Maintain professional standards on stream at all times<br/><br/>• Update your stats in the Hub by Sunday night each week<br/><br/>Missing your slot without notice 3 times may result in removal from the incentive program.</div><select id="mod-day">${DAYS.map(d=>`<option ${mySch?.day===d?'selected':''}>${d}</option>`).join('')}</select><input type="text" id="mod-time" placeholder="e.g. 7:00 PM EST" value="${mySch?.time||''}" maxlength="20"/><input type="text" id="mod-topic" placeholder="Stream topic (optional)" value="${mySch?.topic||''}" maxlength="60"/><label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;cursor:pointer;"><input type="checkbox" id="mod-agree" style="width:auto;margin:0;margin-top:2px;"/><span style="font-size:12px;color:var(--muted2);line-height:1.6;">I have read and agree to the Bloom &amp; Co Live Schedule Commitment above.</span></label><button class="btn btn-g" onclick="saveScheduleModal()">Confirm My Slot</button><button class="btn btn-gh" onclick="closeModal()" style="margin-top:8px;">Cancel</button></div>`);}
+async function saveScheduleModal(){if(!document.getElementById('mod-agree')?.checked){toast('Please agree to the commitment first',true);return;}const day=document.getElementById('mod-day')?.value;const time=document.getElementById('mod-time')?.value.trim();if(!time){toast('Add your live time',true);return;}const dayOrder=DAYS.indexOf(day);try{await FS().setDoc(ref('schedules',currentCreator.id),{creatorId:currentCreator.id,creatorName:currentCreator.name,niche:currentCreator.niche,day,time:san(time),topic:san(document.getElementById('mod-topic')?.value.trim()||''),dayOrder,live:currentCreator.live,updatedAt:FS().serverTimestamp()});closeModal();toast('Schedule confirmed! ✓');hubSec='schedule';renderHub();}catch(e){toast('Error',true);}}
+function renderHubCampaigns(body){
+  const allC=Object.values(campaigns);
+  const allVids=Object.values(hubVideos).filter(v=>!v.deleted);
+  // General campaign videos — visible to all
+  const generalVids=allVids.filter(v=>v.tier==='campaign-general').sort((a,b)=>(parseInt(a.order)||999)-(parseInt(b.order)||999));
+  // Locked campaign videos — need tier code
+  const lockedVids=allVids.filter(v=>v.tier==='campaign-locked').sort((a,b)=>(parseInt(a.order)||999)-(parseInt(b.order)||999));
+  const anyLockUnlocked=Object.values(unlockedTiers).some(v=>v===true);
+
+  const vidCard=(v)=>{const id=ytId(v.url);const thumb=id?`https://img.youtube.com/vi/${id}/mqdefault.jpg`:'';return`<div class="vc" onclick="playVid('${id||''}','${san(v.title).replace(/'/g,"&#39;")}','${san(v.url)}')"><div class="vt"><div class="vti" style="${thumb?`background-image:url('${thumb}')`:''};background-color:rgba(245,239,224,.04);"><div class="pb">▶</div></div></div><div class="vi"><div class="vttl">${san(v.title)}</div><div class="vdsc">${san(v.description||'Tap to watch')}</div></div></div>`;};
+
+  const gCat=(vids)=>{const g={};vids.forEach(v=>{const c=v.category||'General';if(!g[c])g[c]=[];g[c].push(v);});return g;};
+  const renderSec=(vids)=>{if(!vids.length)return'';const g=gCat(vids);return Object.entries(g).map(([cat,cvids])=>`<div class="vcat"><span>${san(cat)}</span></div><div class="nf-row">${cvids.map(vidCard).join('')}</div>`).join('');};
+
+  body.innerHTML=`<p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7;">Sign up for active campaigns and missions. Training videos for each campaign are below — unlock locked videos with your tier code.</p>
+
+  ${allC.length?`<div class="sec-hd"><span class="sec-lbl">Active Campaigns</span></div>${allC.map(c=>`<div class="cc">
+    <div class="cc-title">${san(c.title)}</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:9px;">${san(c.description)}</div>
+    ${c.reward?`<div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:9px;">💰 ${san(c.reward)}</div>`:''}
+    ${enrolledCmp.includes(c.id)?'<span class="cc-enrolled">✓ Enrolled — watch for agency instructions</span>':`<button class="btn btn-g" onclick="enrollCmp('${c.id}')">Sign Up for This Campaign</button>`}
+  </div>`).join(''):`<div class="empty"><div class="empty-ic">🚀</div>No active campaigns yet — check back soon</div>`}
+
+  <div class="div"></div>
+
+  ${generalVids.length?`<div class="sec-hd"><span class="sec-lbl">📹 Training Videos — General</span><span class="cnt">${generalVids.length}</span></div>
+  <p style="font-size:11px;color:var(--muted);margin-bottom:13px;">Free training videos available to all creators.</p>
+  ${renderSec(generalVids)}`:''}
+
+  ${lockedVids.length?`<div class="sec-hd" style="margin-top:${generalVids.length?'4px':'0'};"><span class="sec-lbl">🔒 Training Videos — Members Only</span><span class="cnt">${lockedVids.length}</span></div>
+  ${anyLockUnlocked?renderSec(lockedVids):`<div class="lbox">
+    <div class="lic">🔒</div>
+    <div class="lttl">Locked Training Videos</div>
+    <div class="lsub">These videos are for Bloom &amp; Co members only. Enter any of your tier codes to unlock.</div>
+    ${TO.map(t=>`<div style="margin-bottom:7px;">
+      <div style="font-size:10px;font-weight:700;color:var(--gold);margin-bottom:4px;">${tr(t).lbl}</div>
+      <div style="display:flex;gap:7px;">
+        <input type="password" id="cmplock-${t}" placeholder="Enter ${tr(t).lbl.split(' ')[1]} code" autocomplete="new-password" style="margin-bottom:0;flex:1;" onkeydown="if(event.key==='Enter')unlockTier('${t}')"/>
+        <button class="btn-sm btn-no" onclick="unlockTier('${t}')" style="white-space:nowrap;align-self:center;">Unlock</button>
+      </div>
+      <p class="aerr" id="tuerr-${t}" style="margin-bottom:0;"></p>
+    </div>`).join('')}
+  </div>`}`:''}
+
+  ${!generalVids.length&&!lockedVids.length&&allC.length?'<div class="empty"><div class="empty-ic">📹</div>No training videos added yet — check back soon</div>':''}`;
+}
+}
+function enrollCmp(id){enrolledCmp.push(id);localStorage.setItem('bc_cmp',JSON.stringify(enrolledCmp));toast('Enrolled! Watch for agency instructions. ✓');hubSec='campaigns';renderHub();}
+function renderHubBattles(body){const allB=Object.values(battles);body.innerHTML=`<p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7;">Agency-run live competitions. Sign up, agree to the rules, and compete for the top spot on the weekly leaderboard.</p>${allB.length?allB.map(b=>`<div class="bc"><div class="bc-title">${san(b.title)}</div><div class="bc-vs">${san(b.type||'Diamond Battle')} · ${san(b.date||'This week')}</div><div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:9px;">${san(b.description)}</div>${b.prize?`<div style="font-size:12px;font-weight:700;color:var(--orange);margin-bottom:9px;">🏆 Prize: ${san(b.prize)}</div>`:''} ${enrolledBat.includes(b.id)?'<span class="cc-enrolled">✓ Registered — battle on!</span>':`<button class="btn btn-g" onclick="showBattleModal('${b.id}','${san(b.title).replace(/'/g,"&#39;")}')">Enter This Battle</button>`}</div>`).join(''):`<div class="empty"><div class="empty-ic">⚔️</div>No active battles right now — check back soon</div>`}`;
+}
+function showBattleModal(id,title){showModal(`<div class="sheet"><div class="sh-handle"></div><div class="sh-title">Battle Agreement</div><div class="sh-sub">${san(title)}</div><div class="agree-box"><strong>Battle Rules — read before entering:</strong><br/><br/>• You must go live on the scheduled battle date for the required duration<br/><br/>• Diamonds must be earned through organic gifting only — no fake gifting or boosting<br/><br/>• Keep the competition respectful — no putting down other creators on or off stream<br/><br/>• Results are tracked by the agency and are final<br/><br/>• Violations result in disqualification and may affect your incentive program standing</div><label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;cursor:pointer;"><input type="checkbox" id="bat-agree" style="width:auto;margin:0;margin-top:2px;"/><span style="font-size:12px;color:var(--muted2);line-height:1.6;">I have read and agree to the Battle Rules above.</span></label><button class="btn btn-g" onclick="enrollBat('${id}')">Enter Battle</button><button class="btn btn-gh" onclick="closeModal()" style="margin-top:8px;">Cancel</button></div>`);}
+function enrollBat(id){if(!document.getElementById('bat-agree')?.checked){toast('Please agree to the battle rules first',true);return;}enrolledBat.push(id);localStorage.setItem('bc_bat',JSON.stringify(enrolledBat));closeModal();toast("You're in! Battle on 🔥");hubSec='battles';renderHub();}
+function renderHubOnboarding(body){
+  const steps=[{id:'ob1',lbl:'Complete your creator profile',sub:'Make sure your name, niche, and emoji are saved in the Hub'},{id:'ob2',lbl:'Book your weekly live slot',sub:'Go to Live Schedule and claim your recurring stream day and time'},{id:'ob3',lbl:'Unlock your Hub content tier',sub:'Enter your tier code in the Content Library to access your training videos'},{id:'ob4',lbl:'Watch your first training video',sub:'Start with the Getting Started section in your Content Library'},{id:'ob5',lbl:'Post your first live schedule',sub:'Let the agency and audience know when you go live each week'},{id:'ob6',lbl:'Update your stats after your first live',sub:'Log your diamonds and hours in My Stats after every stream'},{id:'ob7',lbl:'Complete your first Weekly Check-In',sub:'Fill out the check-in form after your first live of the week'},{id:'ob8',lbl:'Join the agency Discord',sub:'Connect with the team and other creators in the private community'}];
+  const done=steps.filter(s=>onboardDone[s.id]).length;const pct=Math.round((done/steps.length)*100);
+  body.innerHTML=`<p style="font-size:12px;color:var(--muted);margin-bottom:13px;line-height:1.7;">Complete all 8 steps to finish your onboarding. Tap each step when done.</p><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;"><span>Progress</span><span>${done}/${steps.length} complete</span></div><div class="pbar"><div class="pfill" style="width:${pct}%"></div></div>${steps.map(step=>`<div class="ck ${onboardDone[step.id]?'done':''}" onclick="toggleOB('${step.id}')"><div class="ck-circ">${onboardDone[step.id]?'✓':''}</div><div><div class="ck-lbl">${step.lbl}</div><div class="ck-sub">${step.sub}</div></div></div>`).join('')}${done===steps.length?`<div class="card-gold" style="text-align:center;margin-top:13px;"><div style="font-size:32px;margin-bottom:8px;">🌸</div><div style="font-family:var(--fh);font-size:18px;color:var(--gold);">Onboarding Complete!</div><div style="font-size:12px;color:var(--muted);margin-top:5px;">You're all set. Now go bloom.</div></div>`:''}`;
+}
+function toggleOB(id){onboardDone[id]=!onboardDone[id];localStorage.setItem('bc_ob',JSON.stringify(onboardDone));hubSec='onboarding';renderHub();}
+function renderHubCheckin(body){
+  const qs=[{id:'q1',type:'stars',lbl:'How would you rate your live stream this week?'},{id:'q2',type:'text',lbl:'What went well on your live this week?'},{id:'q3',type:'text',lbl:'What would you do differently next time?'},{id:'q4',type:'text',lbl:'What is your main goal for next week?'},{id:'q5',type:'text',lbl:'Is there anything you need from the agency?'}];
+  body.innerHTML=`<p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7;">Complete this after your main live of the week. Helps the agency track your progress and support you better.</p>${qs.map(q=>`<div class="cin-q"><label>${q.lbl}</label>${q.type==='stars'?`<div class="stars" id="stars-${q.id}">${[1,2,3,4,5].map(i=>`<button class="star ${(cinRatings[q.id]||0)>=i?'on':''}" onclick="setStar('${q.id}',${i})">⭐</button>`).join('')}</div>`:`<textarea id="${q.id}" placeholder="Type your answer…" maxlength="500"></textarea>`}</div>`).join('')}<button class="btn btn-g" onclick="submitCheckin()">Submit Weekly Check-In</button>`;
+}
+function setStar(qid,val){cinRatings[qid]=val;hubSec='checkin';renderHub();}
+async function submitCheckin(){if(!currentCreator){toast('Log in first',true);return;}const rating=cinRatings['q1']||0;const q2=document.getElementById('q2')?.value.trim();const q3=document.getElementById('q3')?.value.trim();const q4=document.getElementById('q4')?.value.trim();const q5=document.getElementById('q5')?.value.trim();if(!rating||!q2||!q3||!q4){toast('Please fill in all required fields',true);return;}try{await FS().addDoc(col('checkins'),{creatorId:currentCreator.id,creatorName:currentCreator.name,niche:currentCreator.niche,rating,q2:san(q2),q3:san(q3),q4:san(q4),q5:san(q5||''),submittedAt:FS().serverTimestamp()});cinRatings={};toast('Check-in submitted! ✓');hubSec='checkin';renderHub();}catch(e){toast('Error submitting',true);}}
+function renderHubIncentive(body,myTier){
+  const curRank=TO.indexOf(myTier);const tierData=[{key:'seedling',cls:'s',color:'#5A9A5A',name:'🌱 Seedling',req:'0–2,499 diamonds · 2+ hrs/week',rewards:TIER_REWARDS.seedling},{key:'grower',cls:'gr',color:'#5BA4CF',name:'🌿 Grower',req:'2,500–4,999 diamonds · 3+ hrs/week',rewards:TIER_REWARDS.grower},{key:'bloomer',cls:'bl',color:'#2ECC8A',name:'🌸 Bloomer',req:'5,000–9,999 diamonds · 4+ hrs/week',rewards:TIER_REWARDS.bloomer},{key:'bloom',cls:'bm',color:'#E5903A',name:'🌺 Bloom',req:'10,000–19,999 diamonds · 5+ hrs/week',rewards:TIER_REWARDS.bloom},{key:'elite',cls:'e',color:'#9B70CF',name:'👑 Elite',req:'20,000+ diamonds · 6+ hrs/week',rewards:TIER_REWARDS.elite}];
+  body.innerHTML=`<p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7;">Hit your weekly diamond and hour targets to earn your tier rewards. Resets every Monday.</p><div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:16px;background:linear-gradient(135deg,rgba(201,169,76,.08),rgba(14,22,40,.9));border-color:var(--border2);"><div style="font-size:32px;">${tr(myTier).lbl.split(' ')[0]}</div><div><div style="font-family:var(--fh);font-size:15px;color:var(--gold);">Your tier: ${tr(myTier).lbl}</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">${tr(myTier).req}</div>${curRank<4?`<div style="font-size:11px;color:var(--muted);margin-top:2px;">Next: ${tr(TO[curRank+1]).lbl} — ${tr(TO[curRank+1]).req}</div>`:''}</div></div>${tierData.map(t=>`<div class="tc ${t.cls}" style="${t.key===myTier?'border-width:2px;':''}"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;"><div class="tc-n" style="color:${t.color};">${t.name}</div>${t.key===myTier?`<span style="font-size:9px;font-weight:700;color:${t.color};text-transform:uppercase;letter-spacing:.06em;background:${t.color}18;border:1px solid ${t.color}40;padding:2px 7px;border-radius:999px;">Your Tier</span>`:''}</div><div class="tc-r">${t.req}</div>${t.rewards.map(rw=>`<div class="tc-rw"><div class="tc-dot" style="background:${t.color};"></div><div class="tc-txt">${rw}</div></div>`).join('')}</div>`).join('')}<div class="card" style="background:rgba(201,169,76,.05);border-color:var(--border2);margin-top:4px;"><p class="sec-lbl" style="margin-bottom:9px;">⚡ Bonus Challenges</p>${[['🔁 Consistency Streak','Hit Bloomer or above 3 weeks in a row → $15 streak bonus'],['📈 Diamond Climb','Beat your personal best by 25% → $10 bonus + agency recap mention'],['⏱ Marathon Stream','One stream of 3+ hours → priority schedule placement'],['👥 Bring a Bloom','Refer a creator who joins and goes live → $20 referral credit'],['🏅 Monthly MVP','Most improved creator over the month → $50 + full Hub tier upgrade'],['⭐ Audience Favourite','Most upvoted Q&A questions that week → strategy sheet + schedule priority']].map(([title,desc])=>`<div style="display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-top:1px solid rgba(245,239,224,.06);"><div style="flex:1;"><div style="font-size:12px;font-weight:600;color:var(--cream);margin-bottom:2px;">${title}</div><div style="font-size:11px;color:var(--muted);line-height:1.5;">${desc}</div></div></div>`).join('')}</div><div style="background:rgba(245,239,224,.04);border:1px solid var(--border);border-radius:var(--rs);padding:13px;margin-top:4px;font-size:11px;color:var(--muted);line-height:1.8;"><strong style="color:var(--gold);display:block;margin-bottom:6px;">📋 Key Rules</strong>Week runs Monday–Sunday · Diamonds from TikTok Live only · Stats submitted by Sunday night · Cash bonuses paid within 7 days · Manipulation or fake gifting = disqualification</div>`;
+}
+function renderStats(){
+  const s=document.getElementById('s-stats');
+  if(!currentCreator){s.innerHTML=`<div class="wrap"><div class="aw"><img src="${logo()}" class="alogo" onerror="this.style.display='none'"/><p class="atitle">My Stats</p><p class="asub">Log in with your creator code</p><input type="text" id="stc" placeholder="Your creator code" style="text-transform:uppercase;letter-spacing:.06em;text-align:center;" maxlength="20" autocapitalize="characters" autocorrect="off" onkeydown="if(event.key==='Enter')statsLogin()"/><button class="btn btn-g" onclick="statsLogin()">View Stats</button><p class="aerr" id="sterr"></p></div></div>`;return;}
+  const c=currentCreator;const myQs=Object.values(questions).filter(q=>q.creatorId===c.id);const mySch=schedules[c.id];const ti=tr(c.tier||'seedling');const dPct=c.goalDiamonds?Math.min(100,Math.round(((c.diamonds||0)/c.goalDiamonds)*100)):0;const hPct=c.goalHours?Math.min(100,Math.round(((c.hours||0)/(c.goalHours||1))*100)):0;const curRank=TO.indexOf(c.tier||'seedling');const nextT=TO[curRank+1];
+  s.innerHTML=`<div class="wrap"><div style="text-align:center;padding:22px;background:rgba(14,22,40,.7);border:1px solid var(--border);border-radius:var(--rx);margin-bottom:13px;"><div style="font-size:52px;margin-bottom:11px;">${c.emoji||'🎬'}</div><p style="font-family:var(--fh);font-size:22px;color:var(--gold);">${san(c.name)}</p><p style="font-size:12px;color:var(--muted);margin-top:3px;">${niche(c.niche)}</p><div style="margin-top:11px;">${tBadge(c.tier||'seedling')}</div>${nextT?`<p style="font-size:11px;color:var(--muted);margin-top:7px;">Next: <span style="color:var(--gold);">${tr(nextT).lbl}</span> — ${tr(nextT).req}</p>`:'<p style="font-size:11px;color:var(--gold);margin-top:7px;">👑 Highest tier achieved</p>'}</div>
+  <div class="nbanner"><div class="ni">${ti.lbl.split(' ')[0]}</div><div><div class="nt">${ti.lbl}</div><div class="ns">${ti.req}</div></div></div>
+  <div class="sgrid"><div class="sbox"><div class="snum">💎 ${(c.diamonds||0).toLocaleString()}</div><div class="slab">Diamonds</div></div><div class="sbox"><div class="snum">⏱ ${c.hours||0}</div><div class="slab">Hours Live</div></div><div class="sbox"><div class="snum">${myQs.filter(q=>q.status==='approved').length}</div><div class="slab">Q&amp;As Done</div></div><div class="sbox"><div class="snum">${myQs.filter(q=>q.status==='pending').length}</div><div class="slab">Pending Qs</div></div></div>
+  ${c.goalDiamonds||c.goalHours?`<div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Weekly Progress</p><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px;"><span>💎 Diamonds</span><span>${(c.diamonds||0).toLocaleString()} / ${(c.goalDiamonds||0).toLocaleString()}</span></div><div class="pbar"><div class="pfill" style="width:${dPct}%"></div></div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px;"><span>⏱ Hours</span><span>${c.hours||0} / ${c.goalHours||0}</span></div><div class="pbar"><div class="pfill" style="width:${hPct}%;background:linear-gradient(90deg,var(--blue),#7ec8e3)"></div></div></div>`:''}
+  <div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Update My Stats</p><label style="font-size:11px;color:var(--muted);margin-bottom:4px;display:block;">💎 Diamonds this week</label><input type="number" id="msd" placeholder="e.g. 5000" min="0" value="${c.diamonds||''}"/><label style="font-size:11px;color:var(--muted);margin-bottom:4px;display:block;">⏱ Hours streamed</label><input type="number" id="msh" placeholder="e.g. 5" min="0" step="0.5" value="${c.hours||''}"/><button class="btn btn-g" onclick="updateStats()">Save Stats</button></div>
+  <div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Weekly Goals</p><label style="font-size:11px;color:var(--muted);margin-bottom:4px;display:block;">Diamond goal</label><input type="number" id="msgd" placeholder="e.g. 5000" value="${c.goalDiamonds||''}"/><label style="font-size:11px;color:var(--muted);margin-bottom:4px;display:block;">Hours goal</label><input type="number" id="msgh" placeholder="e.g. 5" value="${c.goalHours||''}"/><button class="btn btn-g" onclick="saveGoals()">Save Goals</button></div>
+  <div style="margin-top:15px;"><button class="btn btn-gh" onclick="creatorLogout();renderStats()" style="font-size:11px;">Log Out</button></div></div>`;
+}
+async function statsLogin(){const code=document.getElementById('stc')?.value.trim().toUpperCase();if(!code){document.getElementById('sterr').textContent='Enter your code';return;}try{const snap=await FS().getDocs(FS().query(col('creators'),FS().where('code','==',code)));if(!snap.empty){const d=snap.docs[0];currentCreator={id:d.id,...d.data()};localStorage.setItem('bc_cc',code);subCQ();renderStats();return;}document.getElementById('sterr').textContent='Code not found.';}catch(e){document.getElementById('sterr').textContent='Connection error.';}}
+async function updateStats(){const d2=parseInt(document.getElementById('msd')?.value)||0;const h2=parseFloat(document.getElementById('msh')?.value)||0;if(!currentCreator)return;try{await FS().updateDoc(ref('creators',currentCreator.id),{diamonds:d2,hours:h2});currentCreator.diamonds=d2;currentCreator.hours=h2;toast('Stats updated! ✓');renderStats();}catch(e){toast('Error',true);}}
+async function saveGoals(){const gd=parseInt(document.getElementById('msgd')?.value)||0;const gh=parseFloat(document.getElementById('msgh')?.value)||0;if(!currentCreator)return;try{await FS().updateDoc(ref('creators',currentCreator.id),{goalDiamonds:gd,goalHours:gh});currentCreator.goalDiamonds=gd;currentCreator.goalHours=gh;toast('Goals saved! ✓');renderStats();}catch(e){toast('Error',true);}}
+function renderDeals(){
+  const s=document.getElementById('s-deals');
+  if(!dealsUnlocked){s.innerHTML=`<div class="wrap"><div class="aw"><img src="${logo()}" class="alogo" onerror="this.style.display='none'"/><p class="atitle">Brand Deals</p><p class="asub">Approved creators only</p><input type="password" id="dpw" placeholder="Access code" autocomplete="new-password" onkeydown="if(event.key==='Enter')unlockDeals()"/><button class="btn btn-g" onclick="unlockDeals()">Access Deals</button><p class="aerr" id="derr"></p></div></div>`;return;}
+  const allD=Object.values(deals);
+  s.innerHTML=`<div class="wrap"><div style="text-align:center;margin-bottom:18px;"><p style="font-family:var(--fh);font-size:26px;color:var(--gold);">Brand Deals</p><p style="font-size:12px;color:var(--muted);margin-top:4px;">Curated by Bloom &amp; Co</p></div>${allD.length?allD.map(d=>`<div class="dc"><div class="dc-brand">${san(d.brand)}</div><div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:11px;">${san(d.description)}</div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:11px;">${(d.niches||[]).map(n=>`<span style="font-size:10px;padding:3px 8px;border-radius:999px;border:1px solid var(--border2);color:var(--gold);background:rgba(201,169,76,.08);">${niche(n)}</span>`).join('')}${d.type?`<span style="font-size:10px;padding:3px 8px;border-radius:999px;border:1px solid var(--border2);color:var(--gold);background:rgba(201,169,76,.08);">${san(d.type)}</span>`:''}</div>${d.pay?`<div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:11px;">💰 ${san(d.pay)}</div>`:''} ${appliedDeals.includes(d.id)?'<span class="dc-applied">✓ Applied — agency will be in touch</span>':`<button class="btn btn-g" onclick="applyDeal('${d.id}','${san(d.brand).replace(/'/g,"&#39;")}')">Apply Now</button>`}</div>`).join(''):`<div class="empty"><div class="empty-ic">💼</div>No deals posted yet</div>`}</div>`;
+}
+function unlockDeals(){const pw=document.getElementById('dpw')?.value;if(pw===window.__BCPW.deals){dealsUnlocked=true;renderDeals();}else{document.getElementById('derr').textContent='Incorrect code.';}}
+async function applyDeal(id,brand){if(!currentCreator){toast('Log in as a creator first',true);return;}try{await FS().addDoc(col('dealApplications'),{dealId:id,brand:san(brand),creatorId:currentCreator.id,creatorName:currentCreator.name,niche:currentCreator.niche,appliedAt:FS().serverTimestamp()});appliedDeals.push(id);localStorage.setItem('bc_applied',JSON.stringify(appliedDeals));toast('Applied! ✓');renderDeals();}catch(e){toast('Error',true);}}
+function renderAbout(){
+  const s=document.getElementById('s-about');
+  s.innerHTML=`<div class="hero"><div class="ring-wrap"><img src="${logo()}" class="hero-img" onerror="this.style.display='none'"/><div class="r1"></div><div class="r2"></div></div><div class="htitle">About Us</div><div class="hsub">We don't just manage creators — we build careers.</div></div>
+  <div class="wrap" style="padding-top:10px;"><div class="ab-sec"><h3>Our Mission</h3><p>Bloom &amp; Co is a boutique creator network built for real people with real audiences. We believe that with the right strategy, support, and community, every creator has the potential to grow — not just in numbers, but in confidence, income, and impact.</p></div>
+  <div class="div"></div><div class="ab-sec"><h3>What We Do</h3><ul><li>Train creators in live streaming strategy, gifting, and audience retention</li><li>Connect creators with brand deals and monetisation opportunities</li><li>Provide a private, agency-only community and Creator Hub</li><li>Support creators across TikTok, Instagram, YouTube, and Kick</li><li>Offer personalised strategy sheets, stream audits, and performance tracking</li></ul></div>
+  <div class="div"></div><div class="ab-sec"><h3>The Incentive Program</h3><ul><li><strong style="color:#5A9A5A;">🌱 Seedling</strong> — Entry · Hub access + weekly strategy tip</li><li><strong style="color:var(--blue);">🌿 Grower</strong> — Bronze · Personalised strategy sheet</li><li><strong style="color:var(--green);">🌸 Bloomer</strong> — Silver · Hub upgrade + stream recap</li><li><strong style="color:var(--orange);">🌺 Bloom</strong> — Gold · $25 bonus + full stream audit</li><li><strong style="color:var(--purple);">👑 Elite</strong> — Elite · $50 bonus + agency content plan</li></ul></div>
+  <div class="div"></div><div class="join-c"><h3>Ready to Bloom?</h3><p>If you're a creator ready to take your content seriously, we'd love to connect. Visit our website to learn more about joining the network.</p><a href="${LINKS.web}" target="_blank" style="display:block;text-decoration:none;text-align:center;padding:13px;border-radius:var(--rs);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:linear-gradient(135deg,#B89040,#E8CF7A,#C9A94C);box-shadow:0 4px 22px rgba(201,169,76,.35);margin-bottom:9px;">Visit bloomconetwork.com</a><a href="${LINKS.dc}" target="_blank" style="display:block;text-decoration:none;text-align:center;padding:13px;border-radius:var(--rs);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);border:1px solid var(--border2);background:rgba(245,239,224,.06);">Join our Discord</a></div>
+  <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:7px;"><span style="cursor:pointer;text-decoration:underline;" onclick="showModEntry()">Agency Login</span></p></div>`;
+}
+function showModEntry(){const ex=document.getElementById('mod-entry-pop');if(ex){ex.remove();return;}const div=document.createElement('div');div.id='mod-entry-pop';div.style.cssText='position:fixed;bottom:calc(68px + var(--safe-b) + 9px);left:50%;transform:translateX(-50%);background:rgba(14,22,40,.97);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;z-index:50;min-width:250px;backdrop-filter:blur(20px);';div.innerHTML=`<input type="password" id="mpw" placeholder="Agency password" autocomplete="new-password" style="margin-bottom:7px;" onkeydown="if(event.key==='Enter')unlockModEntry()"/><button class="btn btn-g" onclick="unlockModEntry()" style="font-size:12px;padding:10px;">Enter</button><p class="aerr" id="mperr"></p>`;document.body.appendChild(div);setTimeout(()=>document.getElementById('mpw')?.focus(),100);}
+function unlockModEntry(){const pw=document.getElementById('mpw')?.value;if(pw===window.__BCPW.mod){modLoggedIn=true;const div=document.getElementById('mod-entry-pop');if(div)div.remove();let mt=document.getElementById('t-mod');if(!mt){const nav=document.querySelector('.tabs');const btn=document.createElement('button');btn.className='tab';btn.id='t-mod';btn.innerHTML='<span class="tab-ic">🔐</span><span>Mod</span>';btn.onclick=()=>go('mod');nav.appendChild(btn);}go('mod');}else{const err=document.getElementById('mperr');if(err)err.textContent='Incorrect password.';}}
+function renderMod(){
+  const s=document.getElementById('s-mod');if(!modLoggedIn){s.innerHTML='';return;}
+  const pending=Object.values(questions).filter(q=>q.status==='pending').sort((a,b)=>(b.votes||0)-(a.votes||0));
+  const approved=Object.values(questions).filter(q=>q.status==='approved');
+  const allC=Object.values(creators).filter(c=>!c.deleted).sort((a,b)=>(b.diamonds||0)-(a.diamonds||0));
+  const allSch=Object.values(schedules).sort((a,b)=>(a.dayOrder||0)-(b.dayOrder||0));
+  const allVids=Object.values(hubVideos).filter(v=>!v.deleted).sort((a,b)=>(parseInt(a.order)||999)-(parseInt(b.order)||999));
+  const allCmp=Object.values(campaigns);const allBat=Object.values(battles);
+  const apps=Object.values(window._dealApps||{});
+  const allCI=Object.values(checkins).sort((a,b)=>(b.submittedAt?.seconds||0)-(a.submittedAt?.seconds||0)).slice(0,15);
+  const cName=id=>creators[id]?.name||'Unknown';
+  const tierBtnsFor=(c)=>TO.map(t=>{const active=(c.tier||'seedling')===t;const i=tr(t);return`<button class="tbn ${active?'on':''}" onclick="setTier('${c.id}','${t}')" style="${active?`color:${i.color};border-color:${i.color}40;background:${i.color}18;`:''}">${i.lbl.split(' ').slice(1).join(' ')||t}</button>`;}).join('');
+  s.innerHTML=`<div class="wrap"><div style="text-align:center;margin-bottom:15px;"><p style="font-family:var(--fh);font-size:22px;color:var(--gold);">Agency Panel</p><button class="btn-sm btn-no" onclick="modLogout()" style="margin-top:5px;font-size:10px;">Log Out</button></div>
+
+  <div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Tier Access Codes — give to creators</p>
+    ${TO.map(t=>{const i=tr(t);return`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:${i.color};">${i.lbl}</span><div style="display:flex;align-items:center;gap:7px;"><span style="font-size:11px;color:var(--muted);font-family:monospace;">${window.__BCPW[i.key]||'—'}</span><button class="cpbtn" onclick="copy('${window.__BCPW[i.key]||''}')">Copy</button></div></div>`;}).join('')}
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border2);">
+      <p class="sec-lbl" style="margin-bottom:9px;color:var(--blue);">Niche Codes — separate from tier codes</p>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:9px;line-height:1.6;">Give creators BOTH their tier code AND their niche code. Niche codes unlock niche-specific content across ALL tiers.</p>
+      ${['pets','beauty','lifestyle'].map(n=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--gold);">${niche(n)} Niche Code</span><div style="display:flex;align-items:center;gap:7px;"><span style="font-size:11px;color:var(--muted);font-family:monospace;">${window.__BCPW[n]}</span><button class="cpbtn" onclick="copy('${window.__BCPW[n]}')">Copy</button></div></div>`).join('')}
+    </div>
+  </div>
+
+  <div class="card"><p class="sec-lbl" style="margin-bottom:11px;">🔍 Scouting Scripts</p>${scoutUnlocked?renderScoutScripts():`<input type="password" id="scout-pw" placeholder="Scouting password" autocomplete="new-password" style="margin-bottom:7px;" onkeydown="if(event.key==='Enter')unlockScout()"/><button class="btn btn-g" onclick="unlockScout()" style="font-size:12px;padding:10px;">Unlock Scripts</button><p class="aerr" id="scout-err"></p>`}</div>
+
+  <div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Generate Creator Invite Code</p><select id="inv-niche"><option value="pets">🐾 Pets</option><option value="beauty">✨ Beauty</option><option value="lifestyle">🌿 Lifestyle</option></select><button class="btn btn-g" onclick="genInvite()">Generate Code</button><div id="inv-result" style="margin-top:7px;"></div></div>
+
+  <div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Post Announcement</p><textarea id="ann-txt" placeholder="Network announcement…"></textarea><button class="btn btn-g" onclick="postAnn()">Post to Home Screen</button></div>
+
+  <div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Add Hub Video</p><input type="text" id="vt" placeholder="Video title" maxlength="80"/><input type="url" id="vu" placeholder="Paste video link here" maxlength="200"/><input type="text" id="vd" placeholder="Short description (optional)" maxlength="120"/><input type="text" id="vcat" placeholder="Category e.g. Getting Started, Live Strategy" maxlength="50"/><input type="number" id="vord" placeholder="Display order: 1=first, 2=second…" min="1" max="999"/><select id="vtier">${TO.map(t=>`<option value="${t}">${tr(t).lbl}</option>`).join('')}<option value="campaign-general">📹 Campaign — General (free)</option><option value="campaign-locked">🔒 Campaign — Locked (needs code)</option></select><p style="font-size:10px;color:var(--muted);margin-top:-6px;margin-bottom:9px;">For niche videos select the tier + niche below. General = visible to all in that tier.</p><select id="vniche"><option value="all">All niches (visible to everyone)</option><option value="pets">🐾 Pets only</option><option value="beauty">✨ Beauty only</option><option value="lifestyle">🌿 Lifestyle only</option></select><button class="btn btn-g" onclick="addVideo()" id="add-vid-btn">Add Video</button></div>
+
+  <div class="sec-hd"><span class="sec-lbl">Hub Videos (${allVids.length})</span></div>
+  <p style="font-size:11px;color:var(--muted);margin-bottom:9px;">Tap the tier name to move a video to a different tier.</p>
+  ${allVids.length?allVids.map(v=>`<div class="card-sm" style="margin-bottom:6px;">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">#${v.order||'?'} · ${san(v.title)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:1px;">${v.tier} · ${v.category||'General'} · ${v.niche||'all'}</div>
+      </div>
+      <button class="btn-sm btn-del" onclick="delVideo('${v.id}','${san(v.title).replace(/'/g,"&#39;")}')">🗑</button>
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;">
+      ${TO.map(t=>`<button class="btn-sm ${v.tier===t?'btn-ok':'btn-no'}" onclick="moveVideo('${v.id}','${t}')" style="font-size:9px;padding:3px 8px;">${tr(t).lbl.split(' ').slice(1).join(' ')}</button>`).join('')}
+    </div>
+  </div>`).join(''):'<div class="empty">No videos yet</div>'}
+
+  <div class="div"></div>
+  <div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Post Campaign / Mission</p>
+    <input type="text" id="cmp-t" placeholder="Campaign title" maxlength="80"/>
+    <textarea id="cmp-d" placeholder="What do creators need to do?"></textarea>
+    <input type="text" id="cmp-r" placeholder="Reward e.g. $30 bonus" maxlength="60"/>
+    <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:9px;">To add training videos to the Campaigns tab, use the <strong style="color:var(--gold);">Add Hub Video</strong> section above and select <strong style="color:var(--gold);">Campaign — General</strong> or <strong style="color:var(--gold);">Campaign — Locked</strong> as the tier. You can add unlimited videos this way.</p>
+    <button class="btn btn-g" onclick="postCampaign()">Post Campaign</button></div>
+  ${allCmp.length?`<div class="sec-hd"><span class="sec-lbl">Active Campaigns (${allCmp.length})</span></div>${allCmp.map(c=>`<div class="card-sm" style="display:flex;align-items:center;gap:9px;margin-bottom:5px;"><div style="flex:1;font-size:12px;font-weight:600;">${san(c.title)}</div><button class="btn-sm btn-del" onclick="delCampaign('${c.id}')">🗑</button></div>`).join('')}`:''}
+
+  <div class="div"></div>
+  <div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Post Battle</p><input type="text" id="bat-t" placeholder="Battle title" maxlength="80"/><input type="text" id="bat-type" placeholder="Type e.g. Diamond Battle" maxlength="40"/><input type="text" id="bat-date" placeholder="Date e.g. This Saturday" maxlength="40"/><textarea id="bat-d" placeholder="Battle description and rules…"></textarea><input type="text" id="bat-prize" placeholder="Prize e.g. $50 bonus" maxlength="60"/><button class="btn btn-g" onclick="postBattle()">Post Battle</button></div>
+  ${allBat.length?`<div class="sec-hd"><span class="sec-lbl">Active Battles (${allBat.length})</span></div>${allBat.map(b=>`<div class="card-sm" style="display:flex;align-items:center;gap:9px;margin-bottom:5px;"><div style="flex:1;font-size:12px;font-weight:600;">${san(b.title)}</div><button class="btn-sm btn-del" onclick="delBattle('${b.id}')">🗑</button></div>`).join('')}`:''}
+
+  <div class="div"></div>
+  <div class="card"><p class="sec-lbl" style="margin-bottom:11px;">Post Brand Deal</p><input type="text" id="db" placeholder="Brand name" maxlength="60"/><textarea id="dd" placeholder="What does the brand need?"></textarea><input type="text" id="dp" placeholder="Pay e.g. $200 flat fee" maxlength="60"/><input type="text" id="dty" placeholder="Type e.g. Sponsored Live" maxlength="40"/><div style="display:flex;gap:13px;margin-bottom:11px;"><label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;"><input type="checkbox" id="d-pets"> 🐾 Pets</label><label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;"><input type="checkbox" id="d-beauty"> ✨ Beauty</label><label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;"><input type="checkbox" id="d-lifestyle"> 🌿 Lifestyle</label></div><button class="btn btn-g" onclick="postDeal()">Post Deal</button></div>
+
+  <div class="div"></div>
+  <div class="sec-hd"><span class="sec-lbl">Creator Roster (${allC.length})</span></div>
+  ${allC.map((c,i)=>`<div class="card" style="padding:13px 14px;margin-bottom:7px;"><div style="display:flex;align-items:center;gap:9px;margin-bottom:9px;"><div style="font-family:var(--fh);font-size:15px;font-weight:700;color:${i===0?'var(--gold)':i===1?'#C0C0C0':i===2?'#CD7F32':'var(--muted)'};min-width:24px;text-align:center;">${i===0?'👑':i===1?'🥈':i===2?'🥉':i+1}</div><div class="cav" style="width:36px;height:36px;font-size:17px;">${c.emoji||'🎬'}</div><div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${san(c.name)}</div><div style="font-size:10px;color:var(--muted);margin-top:1px;">${niche(c.niche)} · 💎${(c.diamonds||0).toLocaleString()} · ${c.hours||0}hrs · ${tr(c.tier||'seedling').lbl}</div><div style="font-size:10px;color:var(--muted);">Code: <span style="color:var(--gold);font-weight:700;">${c.code}</span></div></div>${c.live?'<span class="badge blive">Live</span>':''}</div><div class="tbns">${tierBtnsFor(c)}<button class="tbn" style="color:var(--red);border-color:rgba(232,84,84,.3);background:rgba(232,84,84,.08);margin-left:auto;" onclick="delCreator('${c.id}','${san(c.name).replace(/'/g,"&#39;")}')">🗑 Remove</button></div></div>`).join('')||'<div class="empty">No creators yet</div>'}
+
+  <div class="div"></div>
+  <div class="sec-hd"><span class="sec-lbl">Live Schedules (${allSch.length})</span></div>
+  ${allSch.map(sc=>`<div class="card-sm" style="display:flex;align-items:center;gap:11px;"><div style="min-width:85px;"><div style="font-size:11px;font-weight:700;color:var(--gold);">${san(sc.day)}</div><div style="font-size:12px;color:var(--cream);">${san(sc.time)}</div></div><div style="flex:1;"><div style="font-size:12px;font-weight:600;">${san(sc.creatorName)}</div><div style="font-size:10px;color:var(--muted);">${niche(sc.niche)}${sc.topic?' · '+san(sc.topic):''}</div></div>${sc.live?'<span class="badge blive">Live</span>':''}</div>`).join('')||'<div class="empty">No schedules yet</div>'}
+
+  ${allCI.length?`<div class="div"></div><div class="sec-hd"><span class="sec-lbl">Weekly Check-Ins (${allCI.length})</span></div>${allCI.map(ci=>`<div class="card-sm"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;"><span style="font-size:12px;font-weight:600;">${san(creators[ci.creatorId]?.name||'Unknown')}</span><span style="font-size:11px;color:var(--gold);">${'⭐'.repeat(ci.rating||0)}</span></div><div style="font-size:11px;color:var(--muted);line-height:1.6;"><div><strong style="color:var(--cream);">Went well:</strong> ${san(ci.q2)}</div><div style="margin-top:2px;"><strong style="color:var(--cream);">Do differently:</strong> ${san(ci.q3)}</div><div style="margin-top:2px;"><strong style="color:var(--cream);">Goal next week:</strong> ${san(ci.q4)}</div>${ci.q5?`<div style="margin-top:2px;"><strong style="color:var(--cream);">Needs from agency:</strong> ${san(ci.q5)}</div>`:''}</div></div>`).join('')}`:''}
+
+  <div class="div"></div>
+  <div class="sec-hd"><span class="sec-lbl">Pending Questions (${pending.length})</span></div>
+  ${pending.map(q=>`<div class="qc"><div class="qm" style="margin-bottom:7px;"><span style="font-weight:700;color:var(--gold);">${san(cName(q.creatorId))}</span><span>${san(q.name||'@anonymous')}</span><span>▲${q.votes||0}</span></div><div class="qt">${san(q.text)}</div><div style="display:flex;gap:7px;margin-top:9px;"><button class="btn-sm btn-ok" onclick="modQ('${q.id}','approved')">✓ Approve</button><button class="btn-sm btn-no" onclick="modQ('${q.id}','rejected')">✕ Reject</button></div></div>`).join('')||'<div class="empty">All caught up ✓</div>'}
+  ${approved.length?`<div class="div"></div><div class="sec-hd"><span class="sec-lbl">Approved (${approved.length})</span></div>${approved.map(q=>`<div class="qc"><div class="qm" style="margin-bottom:5px;"><span style="font-weight:700;color:var(--gold);">${san(cName(q.creatorId))}</span><span>${san(q.name||'@anonymous')}</span></div><div class="qt">${san(q.text)}</div><div style="margin-top:7px;"><button class="btn-sm btn-no" onclick="modQ('${q.id}','rejected')">Remove</button></div></div>`).join('')}`:''}
+  ${apps.length?`<div class="div"></div><div class="sec-hd"><span class="sec-lbl">Deal Applications (${apps.length})</span></div>${apps.map(a=>`<div class="qc"><div class="qm" style="margin-bottom:4px;"><span style="font-weight:700;color:var(--gold);">${san(a.brand)}</span></div><div style="font-size:12px;">${san(a.creatorName)} · ${niche(a.niche)}</div></div>`).join('')}`:''}
+  </div>`;
+}
+function renderScoutScripts(){
+  const scripts=[{title:'Cold DM — Pets Creator',note:'Use for TikTok pet creators with 500–5,000 followers',body:`Hey [Name]! 👋 I came across your page and your content is exactly what we look for at Bloom & Co.\n\nWe're a boutique creator network that helps pet creators grow on TikTok Live — through coaching, live strategy, brand deal connections, and a cash incentive program for top performers.\n\nWe're selective about who we bring on, and I think you'd be a great fit.\n\nWould love to share more if you're open to it — no pressure at all. 🌸`},{title:'Cold DM — Beauty Creator',note:'Use for beauty/makeup TikTok creators',body:`Hey [Name]! ✨ Your page caught my eye — the way you present your content is genuinely impressive.\n\nI'm reaching out from Bloom & Co, a private creator network for beauty creators serious about growing on TikTok Live.\n\nWe offer coaching, strategy sheets, live support, and a cash incentive program for creators who hit their weekly goals.\n\nIf that sounds interesting I'd love to tell you more. No pressure at all 🌸`},{title:'Follow-Up DM',note:'Send 3–5 days after no response',body:`Hey [Name]! Just following up on my message — I know DMs get busy.\n\nIf you're ever curious about what we do at Bloom & Co, I'm happy to answer any questions. We're always looking for creators who are ready to take their content seriously.\n\nEither way — keep up the great work! 🌿`},{title:'Discovery Call Script',note:'Use when a creator agrees to a call or asks for more info',body:`Thanks for hopping on — I'll keep this short!\n\nBloom & Co is a boutique creator network. We work with a small number of creators across pets, beauty, and lifestyle niches on TikTok Live.\n\nWhat we offer:\n→ Live coaching and personalised strategy sheets\n→ A private creator hub with training videos and tools\n→ Weekly performance tracking and feedback\n→ A cash incentive program — creators who hit their goals earn real bonuses\n→ Brand deal connections as you grow\n\nWe're not looking for volume — we want creators who are committed and ready to grow.\n\nWhat does your current live schedule look like? [Listen and respond]\n\nI think you'd fit really well. Want me to send over the invite details?`},{title:'Rejection / Not Ready Response',note:'When a creator says no or not right now',body:`Totally understand — no pressure at all! 🌸\n\nIf things change or you decide you want to level up your live game, feel free to reach back out. We'd love to have you when the timing is right.\n\nWishing you all the best with your content! 🌿`}];
+  return scripts.map(sc=>`<div class="sc-card"><div class="sc-title">${sc.title}</div><div class="sc-note">${sc.note}</div><div class="sc-body">${sc.body}</div><button class="cpbtn" onclick="copy(document.querySelector('#sc-body-${scripts.indexOf(sc)}').innerText)" style="margin-top:9px;" id="cpbtn-${scripts.indexOf(sc)}">Copy Script</button><pre id="sc-body-${scripts.indexOf(sc)}" style="display:none">${sc.body}</pre></div>`).join('');
+}
+function unlockScout(){const pw=document.getElementById('scout-pw')?.value;if(pw===window.__BCPW.scout){scoutUnlocked=true;toast('Scouting scripts unlocked ✓');renderMod();}else{const e=document.getElementById('scout-err');if(e)e.textContent='Incorrect password.';}}
+function modLogout(){modLoggedIn=false;scoutUnlocked=false;const t=document.getElementById('t-mod');if(t)t.remove();go('about');}
+async function modQ(id,status){try{await FS().updateDoc(ref('questions',id),{status});toast(status==='approved'?'Approved ✓':'Removed');}catch(e){toast('Error',true);}}
+async function setTier(cid,tier){try{await FS().updateDoc(ref('creators',cid),{tier,tierUpdatedAt:FS().serverTimestamp()});if(creators[cid])creators[cid].tier=tier;if(currentCreator?.id===cid)currentCreator.tier=tier;toast(`Updated to ${tr(tier).lbl} ✓`);renderMod();}catch(e){toast('Error',true);}}
+async function delCreator(id,name){if(!confirm(`Remove ${name}?`))return;try{await FS().updateDoc(ref('creators',id),{deleted:true,deletedAt:FS().serverTimestamp()});delete creators[id];toast(`${name} removed.`);renderMod();}catch(e){toast('Error',true);}}
+async function moveVideo(id,tier){try{await FS().updateDoc(ref('hubVideos',id),{tier});if(hubVideos[id])hubVideos[id].tier=tier;toast(`Moved to ${tr(tier).lbl} ✓`);renderMod();}catch(e){toast('Error',true);}}
+async function delVideo(id,title){if(!confirm(`Delete "${title}"?`))return;try{await FS().updateDoc(ref('hubVideos',id),{deleted:true});delete hubVideos[id];toast('Video removed ✓');renderMod();}catch(e){toast('Error',true);}}
+async function genInvite(){const n=document.getElementById('inv-niche')?.value;const code=genCode(n);try{await FS().setDoc(ref('invites',code),{niche:n,used:false,createdAt:FS().serverTimestamp()});document.getElementById('inv-result').innerHTML=`<div class="inv-box"><span>${code}</span><button class="cpbtn" onclick="copy('${code}')">Copy</button></div><p style="font-size:10px;color:var(--muted);">One-time use · ${n}</p>`;toast('Code generated ✓');}catch(e){toast('Error',true);}}
+async function postAnn(){const text=document.getElementById('ann-txt')?.value.trim();if(!text){toast('Write something first',true);return;}try{await FS().addDoc(col('announcements'),{text:san(text),createdAt:FS().serverTimestamp()});document.getElementById('ann-txt').value='';toast('Announcement posted ✓');}catch(e){toast('Error',true);}}
+async function addVideo(){if(_addingVid){toast('Already adding',true);return;}const title=document.getElementById('vt')?.value.trim();const url=document.getElementById('vu')?.value.trim();if(!title||!url){toast('Add title and link',true);return;}const cat=document.getElementById('vcat')?.value.trim()||'General';const order=parseInt(document.getElementById('vord')?.value)||999;const tier=document.getElementById('vtier')?.value;const vn=document.getElementById('vniche')?.value;const btn=document.getElementById('add-vid-btn');if(btn){btn.textContent='Adding…';btn.disabled=true;}_addingVid=true;try{await FS().addDoc(col('hubVideos'),{title:san(title),url:san(url),description:san(document.getElementById('vd')?.value.trim()||''),category:san(cat),tier,niche:vn==='all'?null:vn,order,createdAt:FS().serverTimestamp()});['vt','vu','vd','vcat','vord'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});toast('Video added ✓');}catch(e){toast('Error adding video',true);}finally{_addingVid=false;if(btn){btn.textContent='Add Video';btn.disabled=false;}renderMod();}}
+async function postCampaign(){const title=document.getElementById('cmp-t')?.value.trim();const desc=document.getElementById('cmp-d')?.value.trim();if(!title||!desc){toast('Add title and description',true);return;}try{await FS().addDoc(col('campaigns'),{title:san(title),description:san(desc),reward:san(document.getElementById('cmp-r')?.value.trim()||''),createdAt:FS().serverTimestamp()});['cmp-t','cmp-d','cmp-r'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});toast('Campaign posted ✓');renderMod();}catch(e){toast('Error',true);}}
+async function delCampaign(id){try{await FS().updateDoc(ref('campaigns',id),{deleted:true});delete campaigns[id];toast('Campaign removed ✓');renderMod();}catch(e){toast('Error',true);}}
+async function postBattle(){const title=document.getElementById('bat-t')?.value.trim();const desc=document.getElementById('bat-d')?.value.trim();if(!title||!desc){toast('Add title and description',true);return;}try{await FS().addDoc(col('battles'),{title:san(title),type:san(document.getElementById('bat-type')?.value.trim()||'Diamond Battle'),date:san(document.getElementById('bat-date')?.value.trim()||''),description:san(desc),prize:san(document.getElementById('bat-prize')?.value.trim()||''),createdAt:FS().serverTimestamp()});['bat-t','bat-type','bat-date','bat-d','bat-prize'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});toast('Battle posted ✓');renderMod();}catch(e){toast('Error',true);}}
+async function delBattle(id){try{await FS().updateDoc(ref('battles',id),{deleted:true});delete battles[id];toast('Battle removed ✓');renderMod();}catch(e){toast('Error',true);}}
+async function postDeal(){const brand=document.getElementById('db')?.value.trim();const desc=document.getElementById('dd')?.value.trim();if(!brand||!desc){toast('Add brand and description',true);return;}const ns=[];if(document.getElementById('d-pets')?.checked)ns.push('pets');if(document.getElementById('d-beauty')?.checked)ns.push('beauty');if(document.getElementById('d-lifestyle')?.checked)ns.push('lifestyle');try{await FS().addDoc(col('brandDeals'),{brand:san(brand),description:san(desc),pay:san(document.getElementById('dp')?.value.trim()||''),type:san(document.getElementById('dty')?.value.trim()||''),niches:ns,createdAt:FS().serverTimestamp()});['db','dd','dp','dty'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});toast('Deal posted ✓');}catch(e){toast('Error',true);}}
+function startSubs(){
+  FS().onSnapshot(col('creators'),snap=>{creators={};snap.docs.forEach(d=>creators[d.id]={id:d.id,...d.data()});const lc=Object.values(creators).filter(c=>c.live&&!c.deleted).length;document.getElementById('lct').textContent=`${lc} Live`;if(currentCreator){const u=creators[currentCreator.id];if(u)Object.assign(currentCreator,u);}if(document.getElementById('s-audience').classList.contains('active'))renderAudience();if(modLoggedIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('questions'),snap=>{snap.docs.forEach(d=>{const ex=questions[d.id];questions[d.id]={id:d.id,...d.data(),myVote:ex?.myVote||false};});Object.keys(questions).forEach(id=>{if(!snap.docs.find(d=>d.id===id))delete questions[id];});if(document.getElementById('s-liveq').classList.contains('active'))renderLiveQ();if(document.getElementById('s-stats').classList.contains('active'))renderStats();if(modLoggedIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('schedules'),snap=>{schedules={};snap.docs.forEach(d=>schedules[d.id]={id:d.id,...d.data()});if(document.getElementById('s-hub').classList.contains('active'))renderHub();if(modLoggedIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('brandDeals'),snap=>{deals={};snap.docs.forEach(d=>deals[d.id]={id:d.id,...d.data()});if(document.getElementById('s-deals').classList.contains('active'))renderDeals();});
+  FS().onSnapshot(col('announcements'),snap=>{announcements={};snap.docs.forEach(d=>announcements[d.id]={id:d.id,...d.data()});if(document.getElementById('s-audience').classList.contains('active'))renderAudience();});
+  FS().onSnapshot(col('hubVideos'),snap=>{hubVideos={};snap.docs.forEach(d=>hubVideos[d.id]={id:d.id,...d.data()});if(document.getElementById('s-hub').classList.contains('active'))renderHub();if(modLoggedIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('campaigns'),snap=>{campaigns={};snap.docs.forEach(d=>{const dd=d.data();if(!dd.deleted)campaigns[d.id]={id:d.id,...dd};});if(document.getElementById('s-hub').classList.contains('active'))renderHub();if(modLoggedIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('battles'),snap=>{battles={};snap.docs.forEach(d=>{const dd=d.data();if(!dd.deleted)battles[d.id]={id:d.id,...dd};});if(document.getElementById('s-hub').classList.contains('active'))renderHub();if(modLoggedIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('checkins'),snap=>{checkins={};snap.docs.forEach(d=>checkins[d.id]={id:d.id,...d.data()});if(modLoggedIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+  FS().onSnapshot(col('dealApplications'),snap=>{window._dealApps={};snap.docs.forEach(d=>window._dealApps[d.id]={id:d.id,...d.data()});if(modLoggedIn&&document.getElementById('s-mod').classList.contains('active'))renderMod();});
+}
+async function tryAutoLogin(){const saved=localStorage.getItem('bc_cc');if(!saved)return;try{const snap=await FS().getDocs(FS().query(col('creators'),FS().where('code','==',saved)));if(!snap.empty){const d=snap.docs[0];currentCreator={id:d.id,...d.data()};subCQ();}}catch(e){}}
+
+whenReady(()=>{startSubs();tryAutoLogin().then(()=>renderAudience());});
+</script>
+<script>
+if('serviceWorker' in navigator){
+  const swCode = `
+self.addEventListener('install', e => self.skipWaiting());
+self.addEventListener('activate', e => self.clients.claim());
+self.addEventListener('fetch', e => {
+  if(e.request.url.includes('firestore')||e.request.url.includes('firebase')||e.request.url.includes('googleapis')||e.request.url.includes('gstatic'))return;
+  e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));
+});`;
+  const blob = new Blob([swCode], {type:'text/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+</script>
+</body>
+</html>
